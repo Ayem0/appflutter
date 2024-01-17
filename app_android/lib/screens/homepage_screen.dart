@@ -30,16 +30,16 @@ class _HomepageScreenState extends State<HomepageScreen> {
     Widget content;
     switch (_currentIndex) {
       case 0:
-        content = homepageParcourir();
+        content = homepageAccueil();
         break;
       case 1:
-        content = HomepagePanier();
+        content = homepageParcourir();
         break;
       case 2:
         content = homepageMoncompte(user: _user,);
         break;
       default:
-        content = homepageParcourir();
+        content = homepageAccueil();
     }
 
     return Scaffold(

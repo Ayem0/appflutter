@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:app_android/screens/localisationpage_screen.dart';
 
-class homepageParcourir extends StatefulWidget {
-  const homepageParcourir({Key? key}) : super(key: key);
+class homepageAccueil extends StatefulWidget {
+  const homepageAccueil({Key? key}) : super(key: key);
 
   @override
-  State<homepageParcourir> createState() => _homepageParcourirState();
+  State<homepageAccueil> createState() => _homepageAccueilState();
 }
 
-class _homepageParcourirState extends State<homepageParcourir> {
+class _homepageAccueilState extends State<homepageAccueil> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +31,7 @@ class _homepageParcourirState extends State<homepageParcourir> {
                 child: const Text(
                   "À Location",
                   style: TextStyle(
-                    color: Colors.black54, // Couleur du texte
+                    color: Color.fromARGB(160, 0, 0, 0), // Couleur du texte
                   ),
                 ),
               ),
@@ -77,6 +77,9 @@ class _homepageParcourirState extends State<homepageParcourir> {
                   buildCategory("Recommandés pour vous"),
                   buildOfferList(),
 
+                  buildCategory("Les plus proches de vous"),
+                  buildOfferList(),
+
                   buildCategory("Nouveautés"),
                   buildOfferList(),
 
@@ -118,15 +121,16 @@ class _homepageParcourirState extends State<homepageParcourir> {
               return Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: Container(
-                  height: 130,
+                  height: 150,
+                  width: 230,
                   child: Card(
                     color: Colors.white,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          height: 50,
-                          width: 150,
+                          height: 70,
+                          width: 230,
                           decoration: const BoxDecoration(
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(
@@ -144,7 +148,7 @@ class _homepageParcourirState extends State<homepageParcourir> {
                         const Padding(
                           padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
                           child: Text(
-                            "Nom du commerce",
+                            "Boulangerie de la mairie",
                             style: TextStyle(
                               color: Colors.black, // Couleur du texte
                             ),
@@ -153,7 +157,7 @@ class _homepageParcourirState extends State<homepageParcourir> {
                         const Padding(
                           padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
                           child: Text(
-                            "Heure",
+                            "Pain au chocolat",
                             style: TextStyle(
                               color: Colors.black, // Couleur du texte
                             ),
@@ -164,16 +168,25 @@ class _homepageParcourirState extends State<homepageParcourir> {
                             Padding(
                               padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
                               child: Text(
-                                "Distance",
+                                "08:00-18:00",
                                 style: TextStyle(
                                   color: Colors.black, // Couleur du texte
                                 ),
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.fromLTRB(50, 0, 0, 0),
+                              padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
                               child: Text(
-                                "Prix",
+                                "7 kms",
+                                style: TextStyle(
+                                  color: Colors.black, // Couleur du texte
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(40, 0, 8, 0),
+                              child: Text(
+                                "3.00 €",
                                 style: TextStyle(
                                   color: Colors.black, // Couleur du texte
                                 ),

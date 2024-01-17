@@ -1,17 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:app_android/screens/localisationpage_screen.dart';
 
-class HomepagePanier extends StatefulWidget {
-  const HomepagePanier({super.key});
+class homepageParcourir extends StatefulWidget {
+  const homepageParcourir({super.key});
 
   @override
-  State<HomepagePanier> createState() => _homepagePanierState();
+  State<homepageParcourir> createState() => _homepageParcourirState();
 }
 
-class _homepagePanierState extends State<HomepagePanier> {
+class _homepageParcourirState extends State<homepageParcourir> {
   // Variable pour stocker la valeur du texte
   int numberOfItems = 30;
   int numberZero = 0;
+  var allItems = List.generate(50, (index) => 'item $index');
+  var items = [];
+  var searHistory = [];
+  final TextEditingController searchController = TextEditingController();
+  final SearchController controller = SearchController();
+
+  @override
+  void initState() {
+    super.initState();
+    searchController.addListener(queryListener);
+  }
+
+  void queryListener() {
+    search(searchController.text);
+  }
+
+  @override
+  void dispose() {
+    searchController.removeListener(queryListener);
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void search(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        items = allItems;
+      });
+    } else {
+      setState(() {
+        items = allItems
+            .where((e) => e.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      });
+    }
+  }
+
+  void _closeKeyboard() {
+    FocusScope.of(context).requestFocus(FocusNode());
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -25,16 +66,15 @@ class _homepagePanierState extends State<HomepagePanier> {
             alignment: Alignment.centerLeft,
             child: TextButton(
               onPressed: () {
-                  Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => LocalisationPage()),
-                      );
-                },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LocalisationPage()),
+                );
+              },
               child: const Text(
                 "À Location",
                 style: TextStyle(
-                  color: Colors.black54, // Couleur du texte
+                  color: Color.fromARGB(160, 0, 0, 0), // Couleur du texte
                 ),
               ),
             ),
@@ -45,27 +85,62 @@ class _homepagePanierState extends State<HomepagePanier> {
           child: Row(
             children: [
               Expanded(
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'Recherche...',
-                    hintStyle: TextStyle(
-                        color: Colors.black), // Couleur du texte d'indice
-                    border: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Colors
-                              .black), // Couleur de la bordure de la barre de recherche
+                child: SearchAnchor(
+                  searchController: controller,
+                  viewHintText: 'Rechercher...',
+                  viewTrailing: [
+                    IconButton(
+                      onPressed: () {
+                        controller.clear();
+                      },
+                      icon: Icon(Icons.close),
                     ),
-                  ),
+                    IconButton(
+                      onPressed: () {
+                        searHistory.add(controller.text);
+                        searHistory = searHistory.reversed.toSet().toList();
+                        controller.closeView(controller.text);
+                        _closeKeyboard();
+                      },
+                      icon: Icon(Icons.search),
+                    ),
+                  ],
+                  builder: (context, controller) {
+                    return SearchBar(
+                        controller: controller,
+                        hintText: 'Rechercher...',
+                        onTap: () => controller.openView(),
+                        trailing: [
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.search),
+                          ),
+                        ]);
+                  },
+                  suggestionsBuilder: (context, controller) {
+                    return [
+                      Wrap(
+                        children: List.generate(searHistory.length, (index) {
+                          final item = searHistory[index];
+                          return Padding(
+                            padding: EdgeInsets.only(left: 4, right: 4),
+                            child: ChoiceChip(
+                              label: Text(item),
+                              selected: item == controller.text,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(24))),
+                              onSelected: (value) {
+                                search(item);
+                                controller.closeView(item);
+                              },
+                            ),
+                          );
+                        }),
+                      ),
+                    ];
+                  },
                 ),
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.search,
-                  color: Colors.black,
-                ),
-                onPressed: () {
-                  // Logique de recherche
-                },
               ),
             ],
           ),
@@ -88,15 +163,14 @@ class _homepagePanierState extends State<HomepagePanier> {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Container(
-        height: 130,
+        height: 160,
         child: Card(
           color: Colors.white,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: 50,
-                width: 150,
+                height: 80,
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(
                     topLeft:
@@ -114,7 +188,7 @@ class _homepagePanierState extends State<HomepagePanier> {
               const Padding(
                 padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
                 child: Text(
-                  "Nom du commerce",
+                  "Boulangerie de la mairie",
                   style: TextStyle(
                     color: Colors.black, // Couleur du texte
                   ),
@@ -123,7 +197,7 @@ class _homepagePanierState extends State<HomepagePanier> {
               const Padding(
                 padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
                 child: Text(
-                  "Heure",
+                  "Pain au chocolat",
                   style: TextStyle(
                     color: Colors.black, // Couleur du texte
                   ),
@@ -132,16 +206,25 @@ class _homepagePanierState extends State<HomepagePanier> {
               const Row(
                 children: [
                   Padding(
-                    padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
+                    padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
                     child: Text(
-                      "Distance",
+                      "08:00-18:00",
                       style: TextStyle(
                         color: Colors.black, // Couleur du texte
                       ),
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(50, 0, 0, 0),
+                    padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                    child: Text(
+                      "7 kms",
+                      style: TextStyle(
+                        color: Colors.black, // Couleur du texte
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(170, 0, 0, 0),
                     child: Text(
                       "Prix",
                       style: TextStyle(
