@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_button/sign_in_button.dart';
 
 class Authentication {
   static SnackBar customSnackBar({required String content}) {
@@ -10,6 +12,15 @@ class Authentication {
         style: TextStyle(color: Colors.redAccent, letterSpacing: 0.5),
       ),
     );
+  }
+
+  static Future<User?> refreshUser(User user) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    await user.reload();
+    User? refreshedUser = auth.currentUser;
+
+    return refreshedUser;
   }
 
   static Future<User?> signInUsingEmailPassword({
@@ -89,12 +100,25 @@ class Authentication {
     return user;
   }
 
-  static Future<User?> refreshUser(User user) async {
-    FirebaseAuth auth = FirebaseAuth.instance;
+  
 
-    await user.reload();
-    User? refreshedUser = auth.currentUser;
+// If the user is not new, simply return the original UserCredential
 
-    return refreshedUser;
-  }
+static Future<UserCredential> signInWithGoogle() async {
+  // Trigger the authentication flow
+  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+  // Obtain the auth details from the request
+  final GoogleSignInAuthentication? googleAuth =
+      await googleUser?.authentication;
+
+  // Create a new credential
+  final credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth?.accessToken,
+    idToken: googleAuth?.idToken,
+  );
+
+  // Once signed in, return the UserCredential
+  return await FirebaseAuth.instance.signInWithCredential(credential);
+}
 }

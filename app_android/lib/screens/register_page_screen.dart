@@ -3,8 +3,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:app_android/firebase_options.dart';
 import 'package:app_android/screens/sign_in_page_screen.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_button/sign_in_button.dart';
 import 'package:app_android/widgets/register_form.dart';
+import 'package:app_android/utils/authentication.dart';
 import 'homepage_screen.dart';
+
+
 
 class RegisterPageScreen extends StatefulWidget {
   const RegisterPageScreen({super.key});
@@ -34,14 +39,6 @@ class _RegisterPageScreenState extends State<RegisterPageScreen> {
               Image.asset(
                 'assets/launchingpage_image/logo.png',
                 height: 150,
-              ),
-              SizedBox(height: 20.0),
-              // Bouton Google Sign-In en dessous
-              FilledButton.tonal(
-                onPressed: () {
-                  // Logique Google Sign-In
-                },
-                child: Text('S\'inscire avec Google'),
               ),
               SizedBox(height: 20.0),
               // Formulaire avec e-mail et mot de passe en dessous

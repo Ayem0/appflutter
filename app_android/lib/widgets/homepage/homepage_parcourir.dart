@@ -165,6 +165,7 @@ class _homepageParcourirState extends State<homepageParcourir> {
       child: Container(
         height: 160,
         child: Card(
+          elevation: 3, 
           color: Colors.white,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

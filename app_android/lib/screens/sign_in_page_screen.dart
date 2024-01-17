@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:app_android/firebase_options.dart';
 import 'package:app_android/screens/register_page_screen.dart';
 import '../../ancien_fichiers/user_info_screen.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_button/sign_in_button.dart';
 import '../screens/homepage_screen.dart';
 import '../widgets/sign_in_form.dart';
 
@@ -14,8 +16,25 @@ class SignInPageScreen extends StatefulWidget {
   State<SignInPageScreen> createState() => _SignInPageScreenState();
 }
 
-class _SignInPageScreenState extends State<SignInPageScreen> {
+Future<UserCredential> signInWithGoogle() async {
+  // Trigger the authentication flow
+  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
+  // Obtain the auth details from the request
+  final GoogleSignInAuthentication? googleAuth =
+      await googleUser?.authentication;
+
+  // Create a new credential
+  final credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth?.accessToken,
+    idToken: googleAuth?.idToken,
+  );
+
+  // Once signed in, return the UserCredential
+  return await FirebaseAuth.instance.signInWithCredential(credential);
+}
+
+class _SignInPageScreenState extends State<SignInPageScreen> {
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
 
@@ -60,13 +79,35 @@ class _SignInPageScreenState extends State<SignInPageScreen> {
                   height: 150,
                 ),
                 SizedBox(height: 20.0),
-                // Bouton Google Sign-In en dessous
-                FilledButton.tonal(
-                  onPressed: () {
-                    // Logique Google Sign-In
+                //Bouton Google Sign-In en dessous
+                SignInButton(
+                  Buttons.google,
+                  text: "Se connecter avec Google",
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  elevation: 5,
+                  onPressed: () async {
+                    try {
+                      UserCredential userCredential = await signInWithGoogle();
+                      // L'opération a réussi, vous pouvez accéder à l'utilisateur authentifié
+                      User user = userCredential.user!;
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomepageScreen(user: user),
+                        ),
+                      );
+                      print(
+                          'Utilisateur connecté avec succès: ${user.displayName}');
+                    } catch (e) {
+                      // Une erreur s'est produite lors de la connexion avec Google
+                      print('Erreur de connexion avec Google: $e');
+                      // Ajoutez cette ligne pour obtenir des informations détaillées sur l'erreur
+                      print('Erreur détaillée: $e');
+                    }
                   },
-                  child: Text('Se connecter avec Google'),
                 ),
+                
                 SizedBox(height: 20.0),
                 // Formulaire avec e-mail et mot de passe en dessous
                 FutureBuilder(

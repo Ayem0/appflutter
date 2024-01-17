@@ -9,6 +9,9 @@ class homepageAccueil extends StatefulWidget {
 }
 
 class _homepageAccueilState extends State<homepageAccueil> {
+
+  bool isFavorite = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,10 +26,9 @@ class _homepageAccueilState extends State<homepageAccueil> {
               child: TextButton(
                 onPressed: () {
                   Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => LocalisationPage()),
-                      );
+                    context,
+                    MaterialPageRoute(builder: (context) => LocalisationPage()),
+                  );
                 },
                 child: const Text(
                   "À Location",
@@ -45,10 +47,13 @@ class _homepageAccueilState extends State<homepageAccueil> {
                   child: TextFormField(
                     decoration: const InputDecoration(
                       hintText: 'Recherche...',
-                  hintStyle: TextStyle(color: Colors.black38), // Couleur du texte d'indice
-                  border: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black), // Couleur de la bordure de la barre de recherche
-                  ),
+                      hintStyle: TextStyle(
+                          color: Colors.black38), // Couleur du texte d'indice
+                      border: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors
+                                .black), // Couleur de la bordure de la barre de recherche
+                      ),
                       fillColor: Colors.black,
                     ),
                   ),
@@ -122,26 +127,41 @@ class _homepageAccueilState extends State<homepageAccueil> {
                 padding: const EdgeInsets.all(4.0),
                 child: Container(
                   height: 150,
-                  width: 230,
+                  width: 210,
                   child: Card(
+                    elevation: 3,
                     color: Colors.white,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
                           height: 70,
-                          width: 230,
+                          width: 210,
                           decoration: const BoxDecoration(
                             borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(
-                                  10.0), // Arrondir le coin haut gauche
-                              topRight: Radius.circular(
-                                  10.0), // Arrondir le coin haut droit
+                              topLeft: Radius.circular(10.0),
+                              topRight: Radius.circular(10.0),
                             ),
                             image: DecorationImage(
                               image: AssetImage(
                                   'assets/launchingpage_image/interieur-boulangerie.jpg'),
                               fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.topRight,
+                            child: IconButton(
+                              icon: Icon(
+                                isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: Colors.white, // Couleur du cœur
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  isFavorite = !isFavorite;
+                                });
+                              },
                             ),
                           ),
                         ),
@@ -184,7 +204,7 @@ class _homepageAccueilState extends State<homepageAccueil> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.fromLTRB(40, 0, 8, 0),
+                              padding: EdgeInsets.fromLTRB(20, 0, 8, 0),
                               child: Text(
                                 "3.00 €",
                                 style: TextStyle(
