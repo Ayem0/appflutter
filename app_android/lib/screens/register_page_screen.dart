@@ -1,3 +1,4 @@
+import 'package:app_android/screens/localisationpage_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,23 @@ import 'package:app_android/widgets/register_form.dart';
 import 'package:app_android/utils/authentication.dart';
 import 'homepage_screen.dart';
 
+Future<UserCredential> signInWithGoogle() async {
+  // Trigger the authentication flow
+  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
+  // Obtain the auth details from the request
+  final GoogleSignInAuthentication? googleAuth =
+      await googleUser?.authentication;
+
+  // Create a new credential
+  final credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth?.accessToken,
+    idToken: googleAuth?.idToken,
+  );
+
+  // Once signed in, return the UserCredential
+  return await FirebaseAuth.instance.signInWithCredential(credential);
+}
 
 class RegisterPageScreen extends StatefulWidget {
   const RegisterPageScreen({super.key});
@@ -39,6 +56,34 @@ class _RegisterPageScreenState extends State<RegisterPageScreen> {
               Image.asset(
                 'assets/launchingpage_image/logo.png',
                 height: 150,
+              ),
+              SizedBox(height: 20.0),
+              SignInButton(
+                Buttons.google,
+                text: "S'inscrire avec Google",
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                elevation: 5,
+                onPressed: () async {
+                  try {
+                    UserCredential userCredential = await signInWithGoogle();
+                    // L'opération a réussi, vous pouvez accéder à l'utilisateur authentifié
+                    User user = userCredential.user!;
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LocalisationPageScreen(user: user),
+                      ),
+                    );
+                    print(
+                        'Utilisateur connecté avec succès: ${user.displayName}');
+                  } catch (e) {
+                    // Une erreur s'est produite lors de la connexion avec Google
+                    print('Erreur de connexion avec Google: $e');
+                    // Ajoutez cette ligne pour obtenir des informations détaillées sur l'erreur
+                    print('Erreur détaillée: $e');
+                  }
+                },
               ),
               SizedBox(height: 20.0),
               // Formulaire avec e-mail et mot de passe en dessous

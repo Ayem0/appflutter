@@ -1,16 +1,27 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:app_android/screens/localisationpage_screen.dart';
 
 class homepageAccueil extends StatefulWidget {
-  const homepageAccueil({Key? key}) : super(key: key);
+  const homepageAccueil({Key? key, required User user})
+      : _user = user,
+        super(key: key);
+
+  final User _user;
 
   @override
   State<homepageAccueil> createState() => _homepageAccueilState();
 }
 
 class _homepageAccueilState extends State<homepageAccueil> {
-
   bool isFavorite = false;
+  late User _user;
+
+  @override
+  void initState() {
+    _user = widget._user;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +38,10 @@ class _homepageAccueilState extends State<homepageAccueil> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LocalisationPage()),
+                    MaterialPageRoute(
+                        builder: (context) => LocalisationPageScreen(
+                              user: _user,
+                            )),
                   );
                 },
                 child: const Text(

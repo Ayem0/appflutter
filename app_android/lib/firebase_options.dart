@@ -16,7 +16,7 @@ import 'package:flutter/foundation.dart'
 /// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
-    if (kIsWeb || defaultTargetPlatform == TargetPlatform.windows) {
+    if (kIsWeb) {
       return web;
     }
     switch (defaultTargetPlatform) {
@@ -55,7 +55,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBUZk1xtHll3L_Ectq99A7oC9QfAPE-s58',
-    appId: '1:341194391447:android:c2bcc24ad6fe5d07b08ed2',
+    appId: '1:341194391447:android:f46eadb1d73548c6b08ed2',
     messagingSenderId: '341194391447',
     projectId: 'flutter1-ad4a1',
     storageBucket: 'flutter1-ad4a1.appspot.com',
@@ -63,19 +63,23 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCe54U8o_ZVL8iEOaRYzOEeTlP9Rhc3mXc',
-    appId: '1:341194391447:ios:b4b0d400d49f957ab08ed2',
+    appId: '1:341194391447:ios:b9b40118b5fccdcbb08ed2',
     messagingSenderId: '341194391447',
     projectId: 'flutter1-ad4a1',
     storageBucket: 'flutter1-ad4a1.appspot.com',
-    iosBundleId: 'com.example.flutterApplication1',
+    androidClientId: '341194391447-dsub5e87frv4q340a4gj6jnfvhu26vqs.apps.googleusercontent.com',
+    iosClientId: '341194391447-41jqj20pqljjtgeq6mbi837876ft70lr.apps.googleusercontent.com',
+    iosBundleId: 'com.example.appAndroid',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyCe54U8o_ZVL8iEOaRYzOEeTlP9Rhc3mXc',
-    appId: '1:341194391447:ios:f9aef2ea92b8f6e3b08ed2',
+    appId: '1:341194391447:ios:6f56ca7fa31757cdb08ed2',
     messagingSenderId: '341194391447',
     projectId: 'flutter1-ad4a1',
     storageBucket: 'flutter1-ad4a1.appspot.com',
-    iosBundleId: 'com.example.flutterApplication1.RunnerTests',
+    androidClientId: '341194391447-dsub5e87frv4q340a4gj6jnfvhu26vqs.apps.googleusercontent.com',
+    iosClientId: '341194391447-p9q81518bs3iviuj9cjpc06a1uikg4mf.apps.googleusercontent.com',
+    iosBundleId: 'com.example.appAndroid.RunnerTests',
   );
 }

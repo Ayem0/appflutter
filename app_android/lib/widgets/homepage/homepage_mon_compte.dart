@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '/screens/sign_in_page_screen.dart';
 import '/utils/authentication.dart';
 import '/screens/launchingpage_screen.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class homepageMoncompte extends StatefulWidget {
   const homepageMoncompte({Key? key, required User user})
@@ -16,12 +17,13 @@ class homepageMoncompte extends StatefulWidget {
 
 class _homepageMoncompteState extends State<homepageMoncompte> {
   bool buttonsVisible = false;
-    late User _user;
+  late User _user;
   bool _isSigningOut = false;
 
   Route _routeToSignInScreen() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => SignInPageScreen(),
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          SignInPageScreen(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         var begin = Offset(-1.0, 0.0);
         var end = Offset.zero;
@@ -59,6 +61,7 @@ class _homepageMoncompteState extends State<homepageMoncompte> {
                 setState(() {
                   _isSigningOut = true;
                 });
+                await GoogleSignIn().signOut();
                 await FirebaseAuth.instance.signOut();
                 setState(() {
                   _isSigningOut = false;
@@ -73,13 +76,12 @@ class _homepageMoncompteState extends State<homepageMoncompte> {
   }
 
   @override
-   void initState() {
+  void initState() {
     _user = widget._user;
     super.initState();
   }
 
   @override
-
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
@@ -97,6 +99,7 @@ class _homepageMoncompteState extends State<homepageMoncompte> {
               ),
             ),
           ),
+          Text(_user.displayName.toString()),
           TextButton.icon(
             onPressed: () {},
             icon: Icon(

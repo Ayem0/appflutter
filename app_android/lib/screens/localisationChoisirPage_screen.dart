@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class Localisation2PageScreen extends StatefulWidget {
-  const Localisation2PageScreen({super.key});
+class LocalisationChoisirScreen extends StatefulWidget {
+  const LocalisationChoisirScreen({
+    Key? key,
+    required User user,
+  }) : _user = user,
+       super(key: key);
 
+  final User _user;
   @override
-  State<Localisation2PageScreen> createState() =>
-      _Localisation2PageScreenState();
+  State<LocalisationChoisirScreen> createState() =>
+      _LocalisationChoisirScreenState();
 }
 
-class _Localisation2PageScreenState extends State<Localisation2PageScreen> {
+class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
   final TextEditingController searchController = TextEditingController();
   final SearchController controller = SearchController();
 
@@ -36,7 +42,7 @@ class _Localisation2PageScreenState extends State<Localisation2PageScreen> {
             padding: const EdgeInsets.only(left: 8.0, right: 8),
             child: SearchAnchor(
               searchController: controller,
-              viewHintText: 'Rechercher...',
+              viewHintText: '',
               viewTrailing: [
                 IconButton(
                   onPressed: () {

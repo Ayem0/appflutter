@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:app_android/firebase_options.dart';
-import 'package:app_android/screens/localisation2page_screen.dart';
+import 'package:app_android/screens/localisationChoisirPage_screen.dart';
 import 'package:app_android/screens/localisationpage_screen.dart';
 import 'package:app_android/screens/offerdetail_screen.dart';
 import 'package:app_android/screens/register_pro_screen.dart';

@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:app_android/screens/localisationpage_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class homepageParcourir extends StatefulWidget {
-  const homepageParcourir({super.key});
+  const homepageParcourir({Key? key, required User user})
+      : _user = user,
+        super(key: key);
 
+  final User _user;
   @override
   State<homepageParcourir> createState() => _homepageParcourirState();
 }
 
 class _homepageParcourirState extends State<homepageParcourir> {
+
+  bool isFavorite = false;
   // Variable pour stocker la valeur du texte
   int numberOfItems = 30;
   int numberZero = 0;
@@ -18,9 +24,15 @@ class _homepageParcourirState extends State<homepageParcourir> {
   final TextEditingController searchController = TextEditingController();
   final SearchController controller = SearchController();
 
+  late User _user;
+
+
+  
+
   @override
   void initState() {
     super.initState();
+    _user = widget._user;
     searchController.addListener(queryListener);
   }
 
@@ -68,7 +80,7 @@ class _homepageParcourirState extends State<homepageParcourir> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LocalisationPage()),
+                  MaterialPageRoute(builder: (context) => LocalisationPageScreen(user: _user,)),
                 );
               },
               child: const Text(
@@ -185,6 +197,22 @@ class _homepageParcourirState extends State<homepageParcourir> {
                     fit: BoxFit.cover,
                   ),
                 ),
+                child: Align(
+                            alignment: Alignment.topRight,
+                            child: IconButton(
+                              icon: Icon(
+                                isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: Colors.white, // Couleur du cœur
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  isFavorite = !isFavorite;
+                                });
+                              },
+                            ),
+                          ),
               ),
               const Padding(
                 padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
