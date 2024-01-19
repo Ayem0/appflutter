@@ -49,6 +49,13 @@ class _SignInPageScreenState extends State<SignInPageScreen> {
         MaterialPageRoute(
           builder: (context) => HomepageScreen(
             user: user,
+
+
+            // a remplacer avec resultat de requete sur bdd 
+            city: "",
+            address: "",
+            longitude: 0,
+            latitude: 0,
           ),
         ),
       );
@@ -94,7 +101,13 @@ class _SignInPageScreenState extends State<SignInPageScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HomepageScreen(user: user),
+                          builder: (context) => HomepageScreen(
+                            user: user,
+                            address: "",
+                            city: "",
+                            latitude: 0,
+                            longitude: 0,
+                            ),
                         ),
                       );
                       print(

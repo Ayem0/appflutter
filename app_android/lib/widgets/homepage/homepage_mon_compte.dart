@@ -6,11 +6,25 @@ import '/screens/launchingpage_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class homepageMoncompte extends StatefulWidget {
-  const homepageMoncompte({Key? key, required User user})
-      : _user = user,
+  const homepageMoncompte({
+    Key? key,
+    required User user,
+    required String address,
+    required double latitude,
+    required double longitude,
+    required String city,
+  })  : _user = user,
+        _address = address,
+        _latitude = latitude,
+        _longitude = longitude,
+        _city = city,
         super(key: key);
 
   final User _user;
+  final String _address;
+  final double _latitude;
+  final double _longitude;
+  final String _city;
   @override
   State<homepageMoncompte> createState() => _homepageMoncompteState();
 }
@@ -99,7 +113,14 @@ class _homepageMoncompteState extends State<homepageMoncompte> {
               ),
             ),
           ),
+          Icon(
+            Icons.account_box_rounded,
+            size: 120,
+          ),
           Text(_user.displayName.toString()),
+          SizedBox(
+            height: 20,
+          ),
           TextButton.icon(
             onPressed: () {},
             icon: Icon(

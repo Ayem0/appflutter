@@ -17,6 +17,7 @@ class LocalisationPageScreen extends StatefulWidget {
 class _LocalisationPageScreenState extends State<LocalisationPageScreen> {
   late User _user;
   String _address = '';
+  String _city = "";
   Position? _currentPosition;
 
   @override
@@ -75,12 +76,14 @@ class _LocalisationPageScreenState extends State<LocalisationPageScreen> {
                 try {
                   // Appelez _getAddressFromCoordinates avec la nouvelle position
                   await _getAddressFromCoordinates();
+                  await _getCityFromCoordinates();
+                  print('$_city');
                   print('$_address');
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => LoacalisationActuelleScreen(
-                            user: _user, address: _address)),
+                        builder: (context) => LocalisationActuelleScreen(
+                            user: _user, address: _address, latitude: _currentPosition!.latitude, longitude: _currentPosition!.longitude, city: _city)),
                   );
                 } catch (e) {
                   print("Erreur lors de la récupération de l'adresse : $e");
@@ -162,6 +165,28 @@ class _LocalisationPageScreenState extends State<LocalisationPageScreen> {
       } else {
         setState(() {
           _address = 'Adresse introuvable';
+        });
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération de l\'adresse : $e');
+    }
+  }
+    Future<void> _getCityFromCoordinates() async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        _currentPosition!.latitude,
+        _currentPosition!.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        Placemark placemark = placemarks[0];
+        setState(() {
+          _city =
+              '${placemark.locality}';
+        });
+      } else {
+        setState(() {
+          _city = 'Adresse introuvable';
         });
       }
     } catch (e) {

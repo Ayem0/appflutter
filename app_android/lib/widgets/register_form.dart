@@ -1,3 +1,4 @@
+import 'package:app_android/screens/localisationpage_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:app_android/screens/homepage_screen.dart';
@@ -168,7 +169,7 @@ class _RegisterFormState extends State<RegisterForm> {
                           if (user != null) {
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
-                                builder: (context) => HomepageScreen(
+                                builder: (context) => LocalisationPageScreen(
                                   user: user,
                                 ),
                               ),

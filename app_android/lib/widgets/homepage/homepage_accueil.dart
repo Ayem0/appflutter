@@ -3,11 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:app_android/screens/localisationpage_screen.dart';
 
 class homepageAccueil extends StatefulWidget {
-  const homepageAccueil({Key? key, required User user})
-      : _user = user,
+  const homepageAccueil({
+    Key? key,
+    required User user,
+    required String address,
+    required double latitude,
+    required double longitude,
+    required String city,
+  })  : _user = user,
+        _address = address,
+        _latitude = latitude,
+        _longitude = longitude,
+        _city = city,
         super(key: key);
 
   final User _user;
+  final String _address;
+  final double _latitude;
+  final double _longitude;
+  final String _city;
 
   @override
   State<homepageAccueil> createState() => _homepageAccueilState();
@@ -44,8 +58,8 @@ class _homepageAccueilState extends State<homepageAccueil> {
                             )),
                   );
                 },
-                child: const Text(
-                  "À Location",
+                child:  Text(
+                  "À ${widget._city}",
                   style: TextStyle(
                     color: Color.fromARGB(160, 0, 0, 0), // Couleur du texte
                   ),
@@ -138,7 +152,7 @@ class _homepageAccueilState extends State<homepageAccueil> {
           child: Row(
             children: List.generate(20, (index) {
               return Padding(
-                padding: const EdgeInsets.all(4.0),
+                padding: const EdgeInsets.fromLTRB(4,4,0,4),
                 child: Container(
                   height: 150,
                   width: 210,
@@ -180,7 +194,7 @@ class _homepageAccueilState extends State<homepageAccueil> {
                           ),
                         ),
                         const Padding(
-                          padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
+                          padding: EdgeInsets.fromLTRB(8, 3, 1, 1),
                           child: Text(
                             "Boulangerie de la mairie",
                             style: TextStyle(
@@ -218,7 +232,7 @@ class _homepageAccueilState extends State<homepageAccueil> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.fromLTRB(20, 0, 8, 0),
+                              padding: EdgeInsets.fromLTRB(16, 0, 8, 0),
                               child: Text(
                                 "3.00 €",
                                 style: TextStyle(

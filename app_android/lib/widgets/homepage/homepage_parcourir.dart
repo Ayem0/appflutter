@@ -3,11 +3,25 @@ import 'package:app_android/screens/localisationpage_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class homepageParcourir extends StatefulWidget {
-  const homepageParcourir({Key? key, required User user})
-      : _user = user,
+  const homepageParcourir({
+    Key? key,
+    required User user,
+    required String address,
+    required double latitude,
+    required double longitude,
+    required String city,
+  })  : _user = user,
+        _address = address,
+        _latitude = latitude,
+        _longitude = longitude,
+        _city = city,
         super(key: key);
 
   final User _user;
+  final String _address;
+  final double _latitude;
+  final double _longitude;
+  final String _city;
   @override
   State<homepageParcourir> createState() => _homepageParcourirState();
 }
@@ -83,8 +97,8 @@ class _homepageParcourirState extends State<homepageParcourir> {
                   MaterialPageRoute(builder: (context) => LocalisationPageScreen(user: _user,)),
                 );
               },
-              child: const Text(
-                "À Location",
+              child: Text(
+                "À ${widget._city}",
                 style: TextStyle(
                   color: Color.fromARGB(160, 0, 0, 0), // Couleur du texte
                 ),
@@ -215,7 +229,7 @@ class _homepageParcourirState extends State<homepageParcourir> {
                           ),
               ),
               const Padding(
-                padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
+                padding: EdgeInsets.fromLTRB(10, 3, 1, 1),
                 child: Text(
                   "Boulangerie de la mairie",
                   style: TextStyle(
@@ -224,7 +238,7 @@ class _homepageParcourirState extends State<homepageParcourir> {
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
+                padding: EdgeInsets.fromLTRB(10, 1, 1, 1),
                 child: Text(
                   "Pain au chocolat",
                   style: TextStyle(
@@ -235,7 +249,7 @@ class _homepageParcourirState extends State<homepageParcourir> {
               const Row(
                 children: [
                   Padding(
-                    padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                    padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                     child: Text(
                       "08:00-18:00",
                       style: TextStyle(
@@ -253,9 +267,9 @@ class _homepageParcourirState extends State<homepageParcourir> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(170, 0, 0, 0),
+                    padding: EdgeInsets.fromLTRB(160, 0, 0, 0),
                     child: Text(
-                      "Prix",
+                      "3.00 €",
                       style: TextStyle(
                         color: Colors.black, // Couleur du texte
                       ),

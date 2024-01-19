@@ -114,6 +114,12 @@ class _SignInFormState extends State<SignInForm> {
                               MaterialPageRoute(
                                 builder: (context) => HomepageScreen(
                                   user: user,
+
+                                  // a remplacer avec resultat de requete sur bdd 
+                                  address: '',
+                                  city: '',
+                                  longitude: 0,
+                                  latitude: 0,
                                 ),
                               ),
                             );

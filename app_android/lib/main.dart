@@ -11,6 +11,7 @@ import '../screens/homepage_screen.dart';
 import '../screens/launchingpage_screen.dart';
 import '../screens/sign_in_page_screen.dart';
 import '../screens/register_page_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
       title: 'FlutterFire Samples',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        textTheme: GoogleFonts.openSansTextTheme(),
         primarySwatch: Colors.indigo,
         brightness: Brightness.light,
       ),

@@ -5,11 +5,25 @@ import '/widgets/homepage/homepage_parcourir.dart';
 import '/widgets/homepage/homepage_accueil.dart';
 
 class HomepageScreen extends StatefulWidget {
-  const HomepageScreen({Key? key, required User user})
-      : _user = user,
+  const HomepageScreen({
+    Key? key,
+    required User user,
+    required String address,
+    required double latitude,
+    required double longitude,
+    required String city,
+  })  : _user = user,
+        _address = address,
+        _latitude = latitude,
+        _longitude = longitude,
+        _city = city,
         super(key: key);
 
   final User _user;
+  final String _address;
+  final double _latitude;
+  final double _longitude;
+  final String _city;
   @override
   State<HomepageScreen> createState() => _HomepageScreenState();
 }
@@ -30,16 +44,16 @@ class _HomepageScreenState extends State<HomepageScreen> {
     Widget content;
     switch (_currentIndex) {
       case 0:
-        content = homepageAccueil(user: _user,);
+        content = homepageAccueil(user: _user, longitude: widget._longitude, latitude: widget._latitude, city: widget._city, address: widget._address,);
         break;
       case 1:
-        content = homepageParcourir(user: _user,);
+        content = homepageParcourir(user: _user,longitude: widget._longitude, latitude: widget._latitude, city: widget._city, address: widget._address,);
         break;
       case 2:
-        content = homepageMoncompte(user: _user,);
+        content = homepageMoncompte(user: _user,longitude: widget._longitude, latitude: widget._latitude, city: widget._city, address: widget._address,);
         break;
       default:
-        content = homepageAccueil(user: _user,);
+        content = homepageAccueil(user: _user,longitude: widget._longitude, latitude: widget._latitude, city: widget._city, address: widget._address,);
     }
 
     return Scaffold(
