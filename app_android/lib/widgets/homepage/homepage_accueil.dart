@@ -31,10 +31,34 @@ class _homepageAccueilState extends State<homepageAccueil> {
   bool isFavorite = false;
   late User _user;
 
+  var allItems = List.generate(50, (index) => 'item $index');
+  var items = [];
+  var searHistory = [];
+  final TextEditingController searchController = TextEditingController();
+  final SearchController controller = SearchController();
+
   @override
   void initState() {
     _user = widget._user;
     super.initState();
+  }
+
+  void search(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        items = allItems;
+      });
+    } else {
+      setState(() {
+        items = allItems
+            .where((e) => e.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      });
+    }
+  }
+
+  void _closeKeyboard() {
+    FocusScope.of(context).requestFocus(FocusNode());
   }
 
   @override
@@ -58,7 +82,7 @@ class _homepageAccueilState extends State<homepageAccueil> {
                             )),
                   );
                 },
-                child:  Text(
+                child: Text(
                   "À ${widget._city}",
                   style: TextStyle(
                     color: Color.fromARGB(160, 0, 0, 0), // Couleur du texte
@@ -72,28 +96,62 @@ class _homepageAccueilState extends State<homepageAccueil> {
             child: Row(
               children: [
                 Expanded(
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      hintText: 'Recherche...',
-                      hintStyle: TextStyle(
-                          color: Colors.black38), // Couleur du texte d'indice
-                      border: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Colors
-                                .black), // Couleur de la bordure de la barre de recherche
+                  child: SearchAnchor(
+                    searchController: controller,
+                    viewHintText: 'Rechercher...',
+                    viewTrailing: [
+                      IconButton(
+                        onPressed: () {
+                          controller.clear();
+                        },
+                        icon: Icon(Icons.close),
                       ),
-                      fillColor: Colors.black,
-                    ),
+                      IconButton(
+                        onPressed: () {
+                          searHistory.add(controller.text);
+                          searHistory = searHistory.reversed.toSet().toList();
+                          controller.closeView(controller.text);
+                          _closeKeyboard();
+                        },
+                        icon: Icon(Icons.search),
+                      ),
+                    ],
+                    builder: (context, controller) {
+                      return SearchBar(
+                          controller: controller,
+                          hintText: 'Rechercher...',
+                          onTap: () => controller.openView(),
+                          trailing: [
+                            IconButton(
+                              onPressed: () {},
+                              icon: Icon(Icons.search),
+                            ),
+                          ]);
+                    },
+                    suggestionsBuilder: (context, controller) {
+                      return [
+                        Wrap(
+                          children: List.generate(searHistory.length, (index) {
+                            final item = searHistory[index];
+                            return Padding(
+                              padding: EdgeInsets.only(left: 4, right: 4),
+                              child: ChoiceChip(
+                                label: Text(item),
+                                selected: item == controller.text,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(24))),
+                                onSelected: (value) {
+                                  search(item);
+                                  controller.closeView(item);
+                                },
+                              ),
+                            );
+                          }),
+                        ),
+                      ];
+                    },
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(
-                    Icons.search,
-                    color: Colors.black38,
-                  ),
-                  onPressed: () {
-                    // Logique de recherche
-                  },
                 ),
               ],
             ),
@@ -131,13 +189,28 @@ class _homepageAccueilState extends State<homepageAccueil> {
 
   Widget buildCategory(String categoryName) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        alignment: Alignment.topLeft,
-        child: Text(
-          categoryName,
-          style: TextStyle(color: Colors.black),
-        ),
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            categoryName,
+            style: TextStyle(color: Colors.black),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Handle "Tout Voir" button click
+              // Add your logic here
+            },
+            style: ButtonStyle(
+              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
+              ),
+              minimumSize: MaterialStateProperty.all<Size>(Size(0, 0)),
+            ),
+            child: const Text("Tout voir", style: TextStyle(fontSize: 11, color: Colors.black),),
+          ),
+        ],
       ),
     );
   }
@@ -152,7 +225,7 @@ class _homepageAccueilState extends State<homepageAccueil> {
           child: Row(
             children: List.generate(20, (index) {
               return Padding(
-                padding: const EdgeInsets.fromLTRB(4,4,0,4),
+                padding: const EdgeInsets.fromLTRB(4, 0, 0, 4),
                 child: Container(
                   height: 150,
                   width: 210,

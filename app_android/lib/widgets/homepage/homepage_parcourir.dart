@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:app_android/screens/localisationpage_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+enum FilterOption { Distance, Prix, Note }
+FilterOption _selectedFilter = FilterOption.Distance;
+
+
 class homepageParcourir extends StatefulWidget {
   const homepageParcourir({
     Key? key,
@@ -27,7 +31,6 @@ class homepageParcourir extends StatefulWidget {
 }
 
 class _homepageParcourirState extends State<homepageParcourir> {
-
   bool isFavorite = false;
   // Variable pour stocker la valeur du texte
   int numberOfItems = 30;
@@ -39,9 +42,7 @@ class _homepageParcourirState extends State<homepageParcourir> {
   final SearchController controller = SearchController();
 
   late User _user;
-
-
-  
+  String textFiltre = "Distance";
 
   @override
   void initState() {
@@ -53,6 +54,7 @@ class _homepageParcourirState extends State<homepageParcourir> {
   void queryListener() {
     search(searchController.text);
   }
+
 
   @override
   void dispose() {
@@ -75,10 +77,106 @@ class _homepageParcourirState extends State<homepageParcourir> {
     }
   }
 
+  String getFilterOptionText(FilterOption option) {
+  switch (option) {
+    case FilterOption.Distance:
+      return 'Distance';
+    case FilterOption.Prix:
+      return 'Prix';
+    case FilterOption.Note:
+      return 'Note';
+  }
+}
+  
+
+  void _openBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      constraints: BoxConstraints(minHeight: 300, minWidth: 400),
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Center(
+                    child: Text(
+                      'Trier par :',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.0),
+                  ListTile(
+                    title: const Text('Distance'),
+                    leading: Radio<FilterOption>(
+                      value: FilterOption.Distance,
+                      groupValue: _selectedFilter,
+                      onChanged: (FilterOption? value) {
+                        setState(() {
+                          textFiltre = getFilterOptionText(_selectedFilter);
+                          _selectedFilter = value ?? FilterOption.Distance;
+                        });
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  ListTile(
+                    title: const Text('Prix'),
+                    leading: Radio<FilterOption>(
+                      value: FilterOption.Prix,
+                      groupValue: _selectedFilter,
+                      onChanged: (FilterOption? value) {
+                        setState(() {
+                          textFiltre = getFilterOptionText(_selectedFilter);
+                          _selectedFilter = value ?? FilterOption.Distance;
+                        });
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  ListTile(
+                    title: const Text('Note'),
+                    leading: Radio<FilterOption>(
+                      value: FilterOption.Note,
+                      groupValue: _selectedFilter,
+                      onChanged: (FilterOption? value) {
+                        setState(() {
+                          textFiltre = getFilterOptionText(_selectedFilter);
+                          _selectedFilter = value ?? FilterOption.Distance;
+                        });
+                      },
+                    ),
+                  ),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        textFiltre = getFilterOptionText(_selectedFilter);
+                        Navigator.of(context).pop();
+                        setState(() {
+                          
+                        });
+                      },
+                      child: Text('Valider'),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   void _closeKeyboard() {
     FocusScope.of(context).requestFocus(FocusNode());
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +192,10 @@ class _homepageParcourirState extends State<homepageParcourir> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LocalisationPageScreen(user: _user,)),
+                  MaterialPageRoute(
+                      builder: (context) => LocalisationPageScreen(
+                            user: _user,
+                          )),
                 );
               },
               child: Text(
@@ -171,6 +272,24 @@ class _homepageParcourirState extends State<homepageParcourir> {
             ],
           ),
         ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Text('Trier par : '),
+                  TextButton(
+                    onPressed: () {
+                      _openBottomSheet(context);
+                    },
+                    child: Text(textFiltre,style: TextStyle(color: Colors.blueGrey) ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
         Expanded(
           child: SingleChildScrollView(
             child: Column(
@@ -191,7 +310,7 @@ class _homepageParcourirState extends State<homepageParcourir> {
       child: Container(
         height: 160,
         child: Card(
-          elevation: 3, 
+          elevation: 3,
           color: Colors.white,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,21 +331,19 @@ class _homepageParcourirState extends State<homepageParcourir> {
                   ),
                 ),
                 child: Align(
-                            alignment: Alignment.topRight,
-                            child: IconButton(
-                              icon: Icon(
-                                isFavorite
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: Colors.white, // Couleur du cœur
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  isFavorite = !isFavorite;
-                                });
-                              },
-                            ),
-                          ),
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: Colors.white, // Couleur du cœur
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isFavorite = !isFavorite;
+                      });
+                    },
+                  ),
+                ),
               ),
               const Padding(
                 padding: EdgeInsets.fromLTRB(10, 3, 1, 1),

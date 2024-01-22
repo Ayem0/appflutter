@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.light,
       ),
       
-      home:   LaunchingpageScreen(),
+      home:  LaunchingpageScreen(),
       );
   }
 }

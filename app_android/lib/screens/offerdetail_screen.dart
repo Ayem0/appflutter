@@ -137,16 +137,18 @@ class _OffreDetailPageState extends State<OffreDetailPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(16.0, 0, 0, 2),
-                    child: Text(
-                      'Adresse : 123 Avenue de la libération',
-                      style: TextStyle(
-                        fontSize: 13.0,
-                        color: Colors.black, // Couleur noire
-                      ),
-                    ),
-                  ),
+                  Expanded(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(16.0, 0, 0, 2),
+        child: Text(
+          'Adresse : 123 Avenue de la libération, Limoges, France',
+          style: TextStyle(
+            fontSize: 13.0,
+            color: Colors.black,
+          ),
+        ),
+      ),
+    ),
 
                   Padding(
                     padding: EdgeInsets.fromLTRB(16.0, 0, 0, 2),
@@ -154,16 +156,10 @@ class _OffreDetailPageState extends State<OffreDetailPage> {
                       icon: Icon(Icons.info),
                       onPressed: () {
                         // Action à effectuer lors du clic sur le bouton "Plus d'informations"
-                        // Par exemple, afficher une nouvelle page avec plus de détails
-                        /* Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MoreInformationPage()),
-              ); */
+                       
                       },
                     ),
                   ),
-
-                  // Ajout d'un padding à droite
                 ],
               ),
             ],
@@ -197,8 +193,7 @@ class _OffreDetailPageState extends State<OffreDetailPage> {
                 // Action à effectuer lors du clic sur le bouton Réserver
               },
               child: Text(
-                'Réserver',
-                style: TextStyle(color: Colors.white), // Couleur blanche
+                'Réserver', // Couleur blanche
               ),
             ),
           )

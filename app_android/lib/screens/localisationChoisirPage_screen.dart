@@ -33,24 +33,29 @@ class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
   }
 
   void _handleSearch() async {
-    locations = await locationFromAddress(controller.text);
+     if (controller.text.isNotEmpty) {
+      try {
+        locations = await locationFromAddress(controller.text);
 
-    if (locations.isNotEmpty) {
-      print(locations);
-      setState(() {
-        _selectedLocation = LatLng(
-          locations[0].latitude,
-          locations[0].longitude,
-        );
+        if (locations.isNotEmpty) {
+          print(locations);
+          setState(() {
+            _selectedLocation = LatLng(
+              locations[0].latitude,
+              locations[0].longitude,
+            );
+          });
+          _getDetailsFromCoordinates(
+            locations[0].latitude,
+            locations[0].longitude,
+          );
+          _searched = true;
 
-        _searched = true; // Mettez à jour l'état de recherche
-      });
-
-      // Appeler la fonction pour obtenir les détails
-      _getDetailsFromCoordinates(
-        locations[0].latitude,
-        locations[0].longitude,
-      );
+          // Appeler la fonction pour obtenir les détails
+        }
+      } catch (e) {
+        print('Erreur lors de la récupération des détails : $e');
+      }
     }
   }
 
