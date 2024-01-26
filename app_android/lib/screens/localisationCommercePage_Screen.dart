@@ -41,7 +41,6 @@ class _LocalisationCommerceScreenState
         locations = await locationFromAddress(controller.text);
 
         if (locations.isNotEmpty) {
-          print(locations);
           setState(() {
             _selectedLocation = LatLng(
               locations[0].latitude,

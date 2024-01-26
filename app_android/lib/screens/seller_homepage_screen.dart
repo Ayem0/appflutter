@@ -3,10 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class SellerHomepageScreen extends StatefulWidget {
   const SellerHomepageScreen({
-    Key? key,
+    super.key,
     required User user,
-  })  : _user = user,
-        super(key: key);
+  })  : _user = user;
 
   final User _user;
 
