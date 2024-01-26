@@ -1,12 +1,13 @@
 import 'package:app_android/screens/homepage_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:latlong2/latlong.dart';
 
-class LocalisationChoisirScreen extends StatefulWidget {
-  const LocalisationChoisirScreen({
+class LocalisationCommerceScreen extends StatefulWidget {
+  const LocalisationCommerceScreen({
     Key? key,
     required User user,
   })  : _user = user,
@@ -15,11 +16,12 @@ class LocalisationChoisirScreen extends StatefulWidget {
   final User _user;
 
   @override
-  State<LocalisationChoisirScreen> createState() =>
-      _LocalisationChoisirScreenState();
+  State<LocalisationCommerceScreen> createState() =>
+      _LocalisationCommerceScreenState();
 }
 
-class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
+class _LocalisationCommerceScreenState
+    extends State<LocalisationCommerceScreen> {
   final TextEditingController searchController = TextEditingController();
   final SearchController controller = SearchController();
   LatLng? _selectedLocation;
@@ -34,7 +36,7 @@ class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
   }
 
   void _handleSearch() async {
-     if (controller.text.isNotEmpty) {
+    if (controller.text.isNotEmpty) {
       try {
         locations = await locationFromAddress(controller.text);
 
@@ -58,6 +60,19 @@ class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
         print('Erreur lors de la récupération des détails : $e');
       }
     }
+  }
+
+  Future<void> setLocalisationToSellerDocument(String userId, String adresse,
+      String city, double longitude, double latitude, String country) async {
+    // Ajoutez un document dans la collection 'utilisateurs' avec le champ 'isSeller'
+    await FirebaseFirestore.instance.collection('vendeurs').doc(userId).update({
+      'adresse': address,
+      'ville': city,
+      'longitude': longitude,
+      'latitude': latitude,
+      'pays': country,
+      // Ajoutez d'autres champs si nécessaire
+    });
   }
 
   Future<void> _getDetailsFromCoordinates(
@@ -190,7 +205,14 @@ class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
                       child: Text("Adresse trouvée : ${address}"),
                     ),
                   )
-                : Container(),
+                : Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0,0,8,0),
+                  child: Center(
+                      child: Text(
+                          style: TextStyle(fontSize: 20),
+                          'Veuillez saisir une localisation pour votre commerce.'),
+                    ),
+                ),
           ],
         ),
       ),
@@ -200,6 +222,14 @@ class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
         color: Colors.white,
         child: ElevatedButton(
           onPressed: () {
+            setLocalisationToSellerDocument(
+                widget._user.uid,
+                address,
+                city,
+                locations.isNotEmpty ? locations[0].longitude : 0,
+                locations.isNotEmpty ? locations[0].latitude : 0,
+                country);
+
             Navigator.push(
               context,
               MaterialPageRoute(

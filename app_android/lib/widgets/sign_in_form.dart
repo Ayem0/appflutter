@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:app_android/screens/homepage_screen.dart';
-import '../../ancien_fichiers/user_info_screen.dart';
 import '../utils/authentication.dart';
 import '../utils/validator.dart';
 
@@ -120,6 +119,7 @@ class _SignInFormState extends State<SignInForm> {
                                   city: '',
                                   longitude: 0,
                                   latitude: 0,
+                                  country: "",
                                 ),
                               ),
                             );

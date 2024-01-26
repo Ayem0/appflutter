@@ -10,11 +10,13 @@ class homepageAccueil extends StatefulWidget {
     required double latitude,
     required double longitude,
     required String city,
+    required String country,
   })  : _user = user,
         _address = address,
         _latitude = latitude,
         _longitude = longitude,
         _city = city,
+        _country = country,
         super(key: key);
 
   final User _user;
@@ -22,6 +24,8 @@ class homepageAccueil extends StatefulWidget {
   final double _latitude;
   final double _longitude;
   final String _city;
+  final String _country;
+
 
   @override
   State<homepageAccueil> createState() => _homepageAccueilState();
@@ -30,6 +34,11 @@ class homepageAccueil extends StatefulWidget {
 class _homepageAccueilState extends State<homepageAccueil> {
   bool isFavorite = false;
   late User _user;
+  String _address = ''; // Ajoutez les autres champs nécessaires
+  double _latitude = 0.0;
+  double _longitude = 0.0;
+  String _city = '';
+  String _country = '';
 
   var allItems = List.generate(50, (index) => 'item $index');
   var items = [];
@@ -40,6 +49,14 @@ class _homepageAccueilState extends State<homepageAccueil> {
   @override
   void initState() {
     _user = widget._user;
+    _address = widget._address;
+    _latitude = widget._latitude;
+    _longitude = widget._longitude;
+    _city = widget._city;
+    _country = widget._country;
+    print(_city + _country + _address + _latitude.toString() + _longitude.toString());
+    
+
     super.initState();
   }
 
@@ -83,7 +100,7 @@ class _homepageAccueilState extends State<homepageAccueil> {
                   );
                 },
                 child: Text(
-                  "À ${widget._city}",
+                  "À ${_city}",
                   style: TextStyle(
                     color: Color.fromARGB(160, 0, 0, 0), // Couleur du texte
                   ),

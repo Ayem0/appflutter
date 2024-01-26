@@ -1,68 +1,141 @@
+import 'dart:io';
+import 'package:app_android/screens/localisationCommercePage_Screen.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:app_android/screens/homepage_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class RegisterProScreen extends StatefulWidget {
-  const RegisterProScreen({super.key});
+  const RegisterProScreen({
+    Key? key,
+    required User user,
+    required String address,
+    required double latitude,
+    required double longitude,
+    required String city,
+    required String country,
+  })  : _user = user,
+        _address = address,
+        _latitude = latitude,
+        _longitude = longitude,
+        _city = city,
+        _country = country,
+        super(key: key);
+
+  final User _user;
+  final String _address;
+  final double _latitude;
+  final double _longitude;
+  final String _city;
+  final String _country;
 
   @override
-  State<RegisterProScreen> createState() => _RegisterProScreeState();
+  State<RegisterProScreen> createState() => _RegisterProScreenState();
 }
 
-class _RegisterProScreeState extends State<RegisterProScreen> {
+class _RegisterProScreenState extends State<RegisterProScreen> {
+  File? _image;
+  final TextEditingController _nomDuCommerceController =
+      TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+
+  // Méthode pour sélectionner une image depuis la galerie
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final XFile? pickedImage =
+        await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedImage != null) {
+      setState(() {
+        _image = File(pickedImage.path);
+      });
+    }
+  }
+
+  static Future<void> setUserSeller(String userId) async {
+    // Ajoutez un document dans la collection 'utilisateurs' avec le champ 'isSeller'
+    await FirebaseFirestore.instance
+        .collection('utilisateurs')
+        .doc(userId)
+        .update({
+      'isSeller': true,
+      // Ajoutez d'autres champs si nécessaire
+    });
+  }
+
+  static Future<void> createSellerDocument(String userId, String nomDuCommerce,
+      String description, String imageUrl) async {
+    // Ajoutez un document dans la collection 'vendeurs' avec les informations du vendeur
+    await FirebaseFirestore.instance.collection('vendeurs').doc(userId).set({
+      'uid_utilisateur': userId,
+      'nom du commerce': nomDuCommerce,
+      'description': description,
+      'image_url': imageUrl,
+      // Ajoutez d'autres champs si nécessaire
+    });
+  }
+
+  Future<String> uploadImage(File image) async {
+    // Générez un nom unique pour l'image
+    String imageName =
+        'vendeur_${DateTime.now().millisecondsSinceEpoch.toString()}';
+
+    // Référence du fichier dans Firebase Storage
+    Reference storageReference =
+        FirebaseStorage.instance.ref().child('images/$imageName.jpg');
+
+    // Téléchargez l'image sur Firebase Storage
+    await storageReference.putFile(image);
+
+    // Obtenez l'URL de téléchargement de l'image
+    String imageUrl = await storageReference.getDownloadURL();
+
+    return imageUrl;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 255, 255, 255),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 40, 16, 16),
+          padding: const EdgeInsets.fromLTRB(16.0, 20, 16, 16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Image en dessous
+              Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    icon: Icon(Icons.arrow_back, color: Colors.black),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomepageScreen(
+                            user: widget._user,
+                            address: widget._address,
+                            city: widget._city,
+                            latitude: widget._latitude,
+                            longitude: widget._longitude,
+                            country: widget._country,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ), // Image en dessous
               Image.asset(
                 'assets/launchingpage_image/logo.png',
                 height: 150,
               ),
-              // Bouton Google Sign-In en dessous
-              // Formulaire avec e-mail et mot de passe en dessous
               TextFormField(
-                style: TextStyle(
-                  color: Colors.black, // Couleur du texte de l'étiquette
-                ),
-                decoration: InputDecoration(
-                  labelText: 'E-mail',
-                  labelStyle: TextStyle(
-                    color: Colors.black, // Couleur du texte de l'étiquette
-                  ),
-                ),
-              ),
-              TextFormField(
-                obscureText: true,
-                style: TextStyle(
-                  color: Colors.black, // Couleur du texte de l'étiquette
-                ),
-                decoration: InputDecoration(
-                  labelText: 'Mot de passe',
-                  labelStyle: TextStyle(
-                    color: Colors.black, // Couleur du texte de l'étiquette
-                  ),
-                ),
-              ),
-
-              TextFormField(
-                obscureText: true,
-                style: TextStyle(
-                  color: Colors.black, // Couleur du texte de l'étiquette
-                ),
-                decoration: InputDecoration(
-                  labelText: 'Confirmer mot de passe',
-                  labelStyle: TextStyle(
-                    color: Colors.black, // Couleur du texte de l'étiquette
-                  ),
-                ),
-              ),
-              TextFormField(
+                controller: _nomDuCommerceController,
                 style: TextStyle(
                   color: Colors.black, // Couleur du texte de l'étiquette
                 ),
@@ -74,17 +147,7 @@ class _RegisterProScreeState extends State<RegisterProScreen> {
                 ),
               ),
               TextFormField(
-                style: TextStyle(
-                  color: Colors.black, // Couleur du texte de l'étiquette
-                ),
-                decoration: InputDecoration(
-                  labelText: 'Adresse',
-                  labelStyle: TextStyle(
-                    color: Colors.black, // Couleur du texte de l'étiquette
-                  ),
-                ),
-              ),
-              TextFormField(
+                controller: _descriptionController,
                 style: TextStyle(
                   color: Colors.black, // Couleur du texte de l'étiquette
                 ),
@@ -95,44 +158,40 @@ class _RegisterProScreeState extends State<RegisterProScreen> {
                   ),
                 ),
               ),
-
-              // Lien "Mot de passe oublié ?" en dessous
-
-              // Espacement entre les textes
               SizedBox(height: 20.0),
-              // Bouton "Se connecter" en dessous
-              FilledButton.tonal(
+              ElevatedButton(
                 onPressed: () {
-                  // Logique de connexion
+                  _pickImage();
                 },
-                child: Text('Créer un compte professionnel'),
+                child: Text('Ajouter une image'),
               ),
+              SizedBox(height: 20.0),
+              FilledButton.tonal(
+                onPressed: () async {
+                  // logique d'ajout de commerce
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Vous avez déja un compte ?',
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 6, 44, 41),
-                    ),
-                  ),
-                  SizedBox(width: 6.0),
-                  GestureDetector(
-                    onTap: () {
-                      // Logique pour le texte "Se connecter"
-                    },
-                    child: Text.rich(
-                      TextSpan(
-                        text: 'Se connecter',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 1, 105, 97),
-                          decoration: TextDecoration.underline,
+                  if (_image != null) {
+                    setUserSeller(widget._user.uid);
+                    String imageUrl = await uploadImage(_image!);
+                    createSellerDocument(
+                      widget._user.uid,
+                      _nomDuCommerceController.text,
+                      _descriptionController.text,
+                      imageUrl,
+                    );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LocalisationCommerceScreen(
+                          user: widget._user,
                         ),
                       ),
-                    ),
-                  ),
-                ],
+                    );
+                  } else {
+                    // Gérer le cas où aucune image n'est sélectionnée
+                  }
+                },
+                child: Text('Ajouter mon commerce'),
               ),
             ],
           ),

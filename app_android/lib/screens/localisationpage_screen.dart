@@ -18,6 +18,7 @@ class _LocalisationPageScreenState extends State<LocalisationPageScreen> {
   late User _user;
   String _address = '';
   String _city = "";
+  String _country = '';
   Position? _currentPosition;
 
   @override
@@ -83,7 +84,7 @@ class _LocalisationPageScreenState extends State<LocalisationPageScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => LocalisationActuelleScreen(
-                            user: _user, address: _address, latitude: _currentPosition!.latitude, longitude: _currentPosition!.longitude, city: _city)),
+                            user: _user, address: _address, latitude: _currentPosition!.latitude, longitude: _currentPosition!.longitude, city: _city, country: _country,)),
                   );
                 } catch (e) {
                   print("Erreur lors de la récupération de l'adresse : $e");
@@ -161,6 +162,7 @@ class _LocalisationPageScreenState extends State<LocalisationPageScreen> {
         setState(() {
           _address =
               '${placemark.street}, ${placemark.locality}, ${placemark.country}';
+          _country = '${placemark.country}';
         });
       } else {
         setState(() {

@@ -1,8 +1,9 @@
+import 'package:app_android/screens/register_pro_screen.dart';
+import 'package:app_android/screens/seller_homepage_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '/screens/sign_in_page_screen.dart';
-import '/utils/authentication.dart';
-import '/screens/launchingpage_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class homepageMoncompte extends StatefulWidget {
@@ -13,11 +14,13 @@ class homepageMoncompte extends StatefulWidget {
     required double latitude,
     required double longitude,
     required String city,
+    required String country,
   })  : _user = user,
         _address = address,
         _latitude = latitude,
         _longitude = longitude,
         _city = city,
+        _country = country,
         super(key: key);
 
   final User _user;
@@ -25,6 +28,7 @@ class homepageMoncompte extends StatefulWidget {
   final double _latitude;
   final double _longitude;
   final String _city;
+  final String _country;
   @override
   State<homepageMoncompte> createState() => _homepageMoncompteState();
 }
@@ -32,7 +36,12 @@ class homepageMoncompte extends StatefulWidget {
 class _homepageMoncompteState extends State<homepageMoncompte> {
   bool buttonsVisible = false;
   late User _user;
-  bool _isSigningOut = false;
+  String _address = ''; // Ajoutez les autres champs nécessaires
+  double _latitude = 0.0;
+  double _longitude = 0.0;
+  String _city = '';
+  String _country = '';
+  bool isSeller = false;
 
   Route _routeToSignInScreen() {
     return PageRouteBuilder(
@@ -54,6 +63,31 @@ class _homepageMoncompteState extends State<homepageMoncompte> {
     );
   }
 
+  Future<bool> isUserSeller(String userId) async {
+  try {
+    // Récupère le document utilisateur
+    DocumentSnapshot userDocument = await FirebaseFirestore.instance
+        .collection('utilisateurs')
+        .doc(userId)
+        .get();
+
+    // Vérifie si le document existe et si la propriété isSeller est vraie
+    if (userDocument.exists) {
+      bool res = userDocument.get('isSeller');
+      setState(() {
+        isSeller = res;
+      });
+      return true;
+    } else {
+      return false;
+    }
+  } catch (e) {
+    print('Erreur lors de la vérification du statut de vendeur : $e');
+    return false;
+  }
+}
+
+
   Future<void> _showConfirmationDialog(
       BuildContext context, Function setState) async {
     return showDialog<void>(
@@ -72,14 +106,9 @@ class _homepageMoncompteState extends State<homepageMoncompte> {
             TextButton(
               child: Text('Oui'),
               onPressed: () async {
-                setState(() {
-                  _isSigningOut = true;
-                });
                 await GoogleSignIn().signOut();
                 await FirebaseAuth.instance.signOut();
-                setState(() {
-                  _isSigningOut = false;
-                });
+
                 Navigator.of(context).pushReplacement(_routeToSignInScreen());
               },
             ),
@@ -88,10 +117,23 @@ class _homepageMoncompteState extends State<homepageMoncompte> {
       },
     );
   }
+  Future<void> loadIsSellerStatus() async {
+  bool result = await isUserSeller(_user.uid);
+  setState(() {
+    isSeller = result;
+  });
+  print(isSeller);
+}
 
   @override
   void initState() {
     _user = widget._user;
+    _address = widget._address;
+    _latitude = widget._latitude;
+    _longitude = widget._longitude;
+    _city = widget._city;
+    _country = widget._country;
+    loadIsSellerStatus();
     super.initState();
   }
 
@@ -153,6 +195,68 @@ class _homepageMoncompteState extends State<homepageMoncompte> {
               ),
             ),
           ),
+          if (isSeller) 
+            TextButton.icon(
+            onPressed: () {
+              // envoie vers l'homepage vendeur
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SellerHomepageScreen(
+                    user: widget._user,
+                  ),
+                ),
+              );
+            },
+            icon: Icon(
+              Icons.store,
+              color: Colors.black,
+            ),
+            label: Text(
+              "Accéder à l'interface vendeur",
+              style: TextStyle(color: Colors.black),
+            ),
+            style: ElevatedButton.styleFrom(
+              side: BorderSide(
+                color: buttonsVisible ? Colors.black : Colors.transparent,
+                width: 0.0,
+              ),
+            ),
+          ),
+          
+          if (!isSeller) // Si l'utilisateur n'est pas un vendeur
+      TextButton.icon(
+        onPressed: () {
+          // Logique pour enregistrer le commerce
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RegisterProScreen(
+                user: widget._user,
+                address: _address,
+                city: _city,
+                latitude: _latitude,
+                longitude: _longitude,
+                country: _country,
+              ),
+            ),
+          );
+        },
+        icon: Icon(
+          Icons.store,
+          color: Colors.black,
+        ),
+        label: Text(
+          'Enregistrer mon commerce',
+          style: TextStyle(color: Colors.black),
+        ),
+        style: ElevatedButton.styleFrom(
+          side: BorderSide(
+            color: buttonsVisible ? Colors.black : Colors.transparent,
+            width: 0.0,
+          ),
+        ),
+      ),
           TextButton.icon(
             onPressed: () {
               // Logique pour "Conditions générales"

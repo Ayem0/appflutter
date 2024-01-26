@@ -1,10 +1,7 @@
 import 'package:app_android/screens/localisationpage_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:app_android/screens/homepage_screen.dart';
 import 'package:app_android/screens/sign_in_page_screen.dart';
-import 'package:app_android/widgets/homepage/homepage_parcourir.dart';
-import '../../ancien_fichiers/user_info_screen.dart';
 import '../utils/authentication.dart';
 import '../utils/validator.dart';
 
@@ -40,7 +37,8 @@ class _RegisterFormState extends State<RegisterForm> {
 
   Route _routeToSignInScreen() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => SignInPageScreen(),
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          SignInPageScreen(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         var begin = Offset(-1.0, 0.0);
         var end = Offset.zero;

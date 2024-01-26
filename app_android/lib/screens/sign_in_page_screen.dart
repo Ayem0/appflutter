@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:app_android/firebase_options.dart';
 import 'package:app_android/screens/register_page_screen.dart';
-import '../../ancien_fichiers/user_info_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import '../screens/homepage_screen.dart';
@@ -56,6 +55,7 @@ class _SignInPageScreenState extends State<SignInPageScreen> {
             address: "",
             longitude: 0,
             latitude: 0,
+            country: "",
           ),
         ),
       );
@@ -107,6 +107,7 @@ class _SignInPageScreenState extends State<SignInPageScreen> {
                             city: "",
                             latitude: 0,
                             longitude: 0,
+                            country: "",
                             ),
                         ),
                       );

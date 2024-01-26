@@ -1,14 +1,10 @@
 import 'package:app_android/screens/localisationpage_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:app_android/firebase_options.dart';
 import 'package:app_android/screens/sign_in_page_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:app_android/widgets/register_form.dart';
-import 'package:app_android/utils/authentication.dart';
-import 'homepage_screen.dart';
 
 Future<UserCredential> signInWithGoogle() async {
   // Trigger the authentication flow
@@ -80,8 +76,6 @@ class _RegisterPageScreenState extends State<RegisterPageScreen> {
                   } catch (e) {
                     // Une erreur s'est produite lors de la connexion avec Google
                     print('Erreur de connexion avec Google: $e');
-                    // Ajoutez cette ligne pour obtenir des informations détaillées sur l'erreur
-                    print('Erreur détaillée: $e');
                   }
                 },
               ),

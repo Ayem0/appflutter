@@ -3,8 +3,8 @@ import 'package:app_android/screens/localisationpage_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 enum FilterOption { Distance, Prix, Note }
-FilterOption _selectedFilter = FilterOption.Distance;
 
+FilterOption _selectedFilter = FilterOption.Distance;
 
 class homepageParcourir extends StatefulWidget {
   const homepageParcourir({
@@ -14,11 +14,13 @@ class homepageParcourir extends StatefulWidget {
     required double latitude,
     required double longitude,
     required String city,
+    required String country,
   })  : _user = user,
         _address = address,
         _latitude = latitude,
         _longitude = longitude,
         _city = city,
+        _country = country,
         super(key: key);
 
   final User _user;
@@ -26,6 +28,7 @@ class homepageParcourir extends StatefulWidget {
   final double _latitude;
   final double _longitude;
   final String _city;
+  final String _country;
   @override
   State<homepageParcourir> createState() => _homepageParcourirState();
 }
@@ -43,18 +46,28 @@ class _homepageParcourirState extends State<homepageParcourir> {
 
   late User _user;
   String textFiltre = "Distance";
+  String _address = ''; // Ajoutez les autres champs nécessaires
+  double _latitude = 0.0;
+  double _longitude = 0.0;
+  String _city = '';
+  String _country = '';
 
   @override
   void initState() {
-    super.initState();
     _user = widget._user;
+    _address = widget._address;
+    _latitude = widget._latitude;
+    _longitude = widget._longitude;
+    _city = widget._city;
+    _country = widget._country;
+    print(_city + _country + _address + _latitude.toString() + _longitude.toString());
     searchController.addListener(queryListener);
+    super.initState();
   }
 
   void queryListener() {
     search(searchController.text);
   }
-
 
   @override
   void dispose() {
@@ -78,16 +91,15 @@ class _homepageParcourirState extends State<homepageParcourir> {
   }
 
   String getFilterOptionText(FilterOption option) {
-  switch (option) {
-    case FilterOption.Distance:
-      return 'Distance';
-    case FilterOption.Prix:
-      return 'Prix';
-    case FilterOption.Note:
-      return 'Note';
+    switch (option) {
+      case FilterOption.Distance:
+        return 'Distance';
+      case FilterOption.Prix:
+        return 'Prix';
+      case FilterOption.Note:
+        return 'Note';
+    }
   }
-}
-  
 
   void _openBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -158,9 +170,7 @@ class _homepageParcourirState extends State<homepageParcourir> {
                       onPressed: () {
                         textFiltre = getFilterOptionText(_selectedFilter);
                         Navigator.of(context).pop();
-                        setState(() {
-                          
-                        });
+                        setState(() {});
                       },
                       child: Text('Valider'),
                     ),
@@ -199,7 +209,7 @@ class _homepageParcourirState extends State<homepageParcourir> {
                 );
               },
               child: Text(
-                "À ${widget._city}",
+                "À ${_city}",
                 style: TextStyle(
                   color: Color.fromARGB(160, 0, 0, 0), // Couleur du texte
                 ),
@@ -283,7 +293,8 @@ class _homepageParcourirState extends State<homepageParcourir> {
                     onPressed: () {
                       _openBottomSheet(context);
                     },
-                    child: Text(textFiltre,style: TextStyle(color: Colors.blueGrey) ),
+                    child: Text(textFiltre,
+                        style: TextStyle(color: Colors.blueGrey)),
                   ),
                 ],
               ),

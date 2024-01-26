@@ -1,8 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter/material.dart';
-import 'package:app_android/firebase_options.dart';
-import 'package:app_android/screens/homepage_screen.dart';
 import 'package:app_android/screens/register_page_screen.dart';
 import 'package:app_android/screens/sign_in_page_screen.dart';
 
@@ -76,27 +73,6 @@ class _LaunchingpageScreenState extends State<LaunchingpageScreen> {
                   ),
                 ),
               ],
-            ),
-
-            // Texte "Vous avez un commerce ?"
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 100, 0, 8),
-              child: Text(
-                'Vous avez un commerce ?',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-
-            // Bouton "Créer un compte professionnel"
-            FilledButton.tonal(
-              onPressed: () {
-                // envoie vers la page de création de compte professionnel
-              },
-              child: Text('Créer un compte professionnel'),
             ),
           ],
         ),
