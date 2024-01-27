@@ -6,8 +6,8 @@ import 'package:geocoding/geocoding.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class LocalisationActuelleScreen extends StatefulWidget {
-  LocalisationActuelleScreen({
+class LocalisationGoogleActuelleScreen extends StatefulWidget {
+  LocalisationGoogleActuelleScreen({
     Key? key,
     required User user,
     required String address,
@@ -30,12 +30,12 @@ class LocalisationActuelleScreen extends StatefulWidget {
   final String _city;
   final String _country;
   @override
-  State<LocalisationActuelleScreen> createState() =>
-      _LocalisationActuelleScreenState();
+  State<LocalisationGoogleActuelleScreen> createState() =>
+      _LocalisationGoogleActuelleScreenState();
 }
 
-class _LocalisationActuelleScreenState
-    extends State<LocalisationActuelleScreen> {
+class _LocalisationGoogleActuelleScreenState
+    extends State<LocalisationGoogleActuelleScreen> {
   final TextEditingController searchController = TextEditingController();
   final SearchController controller = SearchController();
 
@@ -88,13 +88,15 @@ class _LocalisationActuelleScreenState
     }
   }
 
-  Future<void> addLocalisationToUser(String userId, String adresse,
-      String city, double longitude, double latitude, String country) async {
+  Future<void> setLocalisationToGoogleUser(String userId) async {
     // Ajoutez un document dans la collection 'utilisateurs' avec le champ 'isSeller'
     await FirebaseFirestore.instance
         .collection('utilisateurs')
         .doc(userId)
-        .update({
+        .set({
+          'email': widget._user.email,
+          'prenom': widget._user.displayName,
+      'isSeller': false,
       'adresse': widget._address,
       'ville': city,
       'longitude': longitude,
@@ -238,8 +240,8 @@ class _LocalisationActuelleScreenState
         color: Colors.white,
         child: ElevatedButton(
           onPressed: () {
-            addLocalisationToUser(
-                widget._user.uid, address, city, longitude, latitude, country);
+            setLocalisationToGoogleUser(
+                widget._user.uid);
             Navigator.push(
               context,
               MaterialPageRoute(

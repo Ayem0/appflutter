@@ -1,10 +1,11 @@
 
+import 'package:app_android/screens/homepageSeller_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:app_android/firebase_options.dart';
 import '../screens/launchingpage_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

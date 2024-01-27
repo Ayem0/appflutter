@@ -5,6 +5,18 @@ import 'package:app_android/screens/sign_in_page_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:app_android/widgets/register_form.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+Future<void> createUserDocument(
+    String userId, String email, String name) async {
+  // Ajoutez un document dans la collection 'utilisateurs' avec le champ 'isSeller'
+  await FirebaseFirestore.instance.collection('utilisateurs').doc(userId).set({
+    'prenom': name,
+    'isSeller': false,
+    'email': email,
+    // Ajoutez d'autres champs si nécessaire
+  });
+}
 
 Future<UserCredential> signInWithGoogle() async {
   // Trigger the authentication flow
@@ -65,10 +77,15 @@ class _RegisterPageScreenState extends State<RegisterPageScreen> {
                     UserCredential userCredential = await signInWithGoogle();
                     // L'opération a réussi, vous pouvez accéder à l'utilisateur authentifié
                     User user = userCredential.user!;
+                    String uid = userCredential.user!.uid.toString();
+                    String name = userCredential.user!.displayName.toString();
+                    String email = userCredential.user!.email.toString();
+                    createUserDocument(uid, email, name);
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => LocalisationPageScreen(user: user),
+                        builder: (context) =>
+                            LocalisationPageScreen(user: user),
                       ),
                     );
                     print(

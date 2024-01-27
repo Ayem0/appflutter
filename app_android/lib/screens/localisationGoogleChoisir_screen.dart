@@ -6,8 +6,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:latlong2/latlong.dart';
 
-class LocalisationChoisirScreen extends StatefulWidget {
-  const LocalisationChoisirScreen({
+class LocalisationGoogleChoisirScreen extends StatefulWidget {
+  const LocalisationGoogleChoisirScreen({
     Key? key,
     required User user,
   })  : _user = user,
@@ -16,11 +16,11 @@ class LocalisationChoisirScreen extends StatefulWidget {
   final User _user;
 
   @override
-  State<LocalisationChoisirScreen> createState() =>
-      _LocalisationChoisirScreenState();
+  State<LocalisationGoogleChoisirScreen> createState() =>
+      _LocalisationGoogleChoisirScreenState();
 }
 
-class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
+class _LocalisationGoogleChoisirScreenState extends State<LocalisationGoogleChoisirScreen> {
   final TextEditingController searchController = TextEditingController();
   final SearchController controller = SearchController();
   LatLng? _selectedLocation;
@@ -30,6 +30,8 @@ class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
   List<Location> locations = [];
   bool _searched = false;
 
+ @override
+ 
   void _closeKeyboard() {
     FocusScope.of(context).requestFocus(FocusNode());
   }
@@ -60,12 +62,15 @@ class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
       }
     }
   }
-  Future<void> addLocalisationToUser(String userId) async {
+  Future<void> setLocalisationToGoogleUser(String userId) async {
     // Ajoutez un document dans la collection 'utilisateurs' avec le champ 'isSeller'
     await FirebaseFirestore.instance
         .collection('utilisateurs')
         .doc(userId)
-        .update({
+        .set({
+          'email': widget._user.email,
+          'prenom': widget._user.displayName,
+      'isSeller': false,
       'adresse': address,
       'ville': city,
       'longitude': locations[0].longitude,
@@ -202,7 +207,7 @@ class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
                     padding:
                         const EdgeInsets.only(right: 16.0, left: 16, bottom: 8),
                     child: Container(
-                      child: Text("Adresse trouvée : ${address}"),
+                      child: Text("Adresse trouvée : ${address}, ${city}, ${country}"),
                     ),
                   )
                 : Container(),
@@ -215,15 +220,16 @@ class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
         color: Colors.white,
         child: ElevatedButton(
           onPressed: () {
-            addLocalisationToUser(widget._user.uid);
+            setLocalisationToGoogleUser(
+                widget._user.uid);
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => HomepageScreen(
                   user: widget._user,
                   address: address,
-                  longitude: locations.isNotEmpty ? locations[0].latitude : 0,
-                  latitude: locations.isNotEmpty ? locations[0].longitude : 0,
+                  longitude: locations[0].longitude,
+                  latitude: locations[0].latitude,
                   city: city,
                   country: country,
                 ),

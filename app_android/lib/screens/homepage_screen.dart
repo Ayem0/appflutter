@@ -1,3 +1,4 @@
+import 'package:app_android/screens/localisationGoogle_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '/widgets/homepage/homepage_mon_compte.dart';
@@ -5,25 +6,7 @@ import '/widgets/homepage/homepage_parcourir.dart';
 import '/widgets/homepage/homepage_accueil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-Future<Map<String, dynamic>> getLocalisationFromUserDocument(String userId) async {
-    try {
-      // Récupère le document utilisateur
-      DocumentSnapshot userDocument =
-          await FirebaseFirestore.instance.collection('utilisateurs').doc(userId).get();
 
-      // Vérifie si le document existe
-      if (userDocument.exists) {
-        // Renvoie les données du document sous forme de Map
-        return userDocument.data() as Map<String, dynamic>;
-      } else {
-        print('Le document utilisateur n\'existe pas.');
-        return {};
-      }
-    } catch (e) {
-      print('Erreur lors de la récupération des informations utilisateur : $e');
-      return {};
-    }
-  }
 class HomepageScreen extends StatefulWidget {
   const HomepageScreen({
     Key? key,
@@ -71,7 +54,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
 
   void _loadUserLocation(user) async {
     Map<String, dynamic> userData =
-        await getLocalisationFromUserDocument(user);
+        await getLocalisationFromUser(user);
 
     setState(() {
       // Mettez à jour les données du widget avec celles récupérées de la base de données
@@ -84,6 +67,41 @@ class _HomepageScreenState extends State<HomepageScreen> {
     });
   }
 
+ Future<Map<String, dynamic>> getLocalisationFromUser(String userId) async {
+    try {
+      // Récupère le document utilisateur
+      DocumentSnapshot userDocument =
+          await FirebaseFirestore.instance.collection('utilisateurs').doc(userId).get();
+
+      // Vérifie si le document existe
+      if (userDocument.exists) {
+        Map<String, dynamic> userData = userDocument.data() as Map<String, dynamic>;
+        if (userData['adresse'] != null) {
+                  return userDocument.data() as Map<String, dynamic>;
+        }
+        else {
+          Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LocalisationGooglePageScreen(user: widget._user,)),
+                      );
+        return {};
+        }
+        // Renvoie les données du document sous forme de Map
+      } else {
+
+        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LocalisationGooglePageScreen(user: widget._user,)),
+                      );
+        return {};
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération des informations utilisateur : $e');
+      return {};
+    }
+  }
   
   @override
 
@@ -112,7 +130,9 @@ class _HomepageScreenState extends State<HomepageScreen> {
     }
   } else {
     // Si les données ne sont pas encore chargées, affichez un indicateur de chargement ou ne rien afficher
-    content = CircularProgressIndicator(strokeAlign:  1); // Remplacez ceci par l'indicateur de chargement souhaité
+    content = Center(
+      child: CircularProgressIndicator(strokeAlign:  1),
+    );// Remplacez ceci par l'indicateur de chargement souhaité
   }
 
     return Scaffold(

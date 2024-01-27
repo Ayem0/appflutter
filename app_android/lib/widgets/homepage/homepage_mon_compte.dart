@@ -1,5 +1,5 @@
 import 'package:app_android/screens/register_pro_screen.dart';
-import 'package:app_android/screens/seller_homepage_screen.dart';
+import 'package:app_android/screens/homepageSeller_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -76,8 +76,15 @@ class _homepageMoncompteState extends State<homepageMoncompte> {
       bool res = userDocument.get('isSeller');
       setState(() {
         isSeller = res;
+        
       });
-      return true;
+      if (isSeller == true) {
+          return true;
+
+        }
+        else {
+          return false;
+        }
     } else {
       return false;
     }
@@ -203,7 +210,7 @@ class _homepageMoncompteState extends State<homepageMoncompte> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => SellerHomepageScreen(
-                    user: widget._user,
+                     user: widget._user,
                   ),
                 ),
               );

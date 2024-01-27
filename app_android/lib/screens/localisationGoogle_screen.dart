@@ -1,3 +1,5 @@
+import 'package:app_android/screens/localisationGoogleActuelle_screen.dart';
+import 'package:app_android/screens/localisationGoogleChoisir_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:app_android/screens/localisationChoisirPage_screen.dart';
 import 'package:app_android/screens/localisationActuellePage_screen.dart';
@@ -5,16 +7,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
-class LocalisationPageScreen extends StatefulWidget {
-  const LocalisationPageScreen({Key? key, required User user})
+class LocalisationGooglePageScreen extends StatefulWidget {
+  const LocalisationGooglePageScreen({Key? key, required User user})
       : _user = user,
         super(key: key);
   final User _user;
   @override
-  State<LocalisationPageScreen> createState() => _LocalisationPageScreenState();
+  State<LocalisationGooglePageScreen> createState() => _LocalisationGooglePageScreenState();
 }
 
-class _LocalisationPageScreenState extends State<LocalisationPageScreen> {
+class _LocalisationGooglePageScreenState extends State<LocalisationGooglePageScreen> {
   late User _user;
   String _address = '';
   String _city = "";
@@ -70,7 +72,7 @@ class _LocalisationPageScreenState extends State<LocalisationPageScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => LocalisationActuelleScreen(
+                        builder: (context) => LocalisationGoogleActuelleScreen(
                             user: _user, address: _address, latitude: _currentPosition!.latitude, longitude: _currentPosition!.longitude, city: _city, country: _country,)),
                   );
                 } catch (e) {
@@ -90,7 +92,7 @@ class _LocalisationPageScreenState extends State<LocalisationPageScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        LocalisationChoisirScreen(user: _user)),
+                        LocalisationGoogleChoisirScreen(user: _user)),
               );
             },
             child: const Text('Choisir un lieu'),
