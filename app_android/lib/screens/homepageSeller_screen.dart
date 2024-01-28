@@ -1,10 +1,9 @@
+// Importez les packages nécessaires
 import 'package:app_android/screens/createOffer_screen.dart';
 import 'package:app_android/screens/homepage_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-String nomDuCommerce =
-    "Boulangerie de la mairie"; // a remplacer par nom du commerce
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SellerHomepageScreen extends StatefulWidget {
   const SellerHomepageScreen({
@@ -19,14 +18,103 @@ class SellerHomepageScreen extends StatefulWidget {
 }
 
 class _SellerHomepageScreenState extends State<SellerHomepageScreen> {
+  List<Map<String, dynamic>> availableOffers = [];
+  List<Map<String, dynamic>> soldOffers = [];
+  List<Map<String, dynamic>> canceledOffers = [];
+  String nomDuCommerce = '';
+
   @override
+  void initState() {
+    super.initState();
+    // Appeler la fonction pour récupérer les offres lors de l'initialisation de la page
+    getAvailableOffers();
+    getNomDuCommerce();
+  }
+
+  Future<void> getAvailableOffers() async {
+    try {
+      // Récupérer les offres du vendeur depuis Firestore
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('offres')
+              .where('uid_vendeur', isEqualTo: widget._user.uid)
+              .where('etat', isEqualTo: "disponible")
+              .get();
+
+      setState(() {
+        availableOffers = querySnapshot.docs.map((doc) => doc.data()).toList();
+      });
+    } catch (e) {
+      print('Erreur lors de la récupération des offres : $e');
+    }
+  }
+
+  Future<void> getSoldOffers() async {
+    try {
+      // Récupérer les offres du vendeur depuis Firestore
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('offres')
+              .where('uid_vendeur', isEqualTo: widget._user.uid)
+              .where('etat', isEqualTo: "vendue")
+              .get();
+
+      setState(() {
+        soldOffers = querySnapshot.docs.map((doc) => doc.data()).toList();
+      });
+    } catch (e) {
+      print('Erreur lors de la récupération des offres : $e');
+    }
+  }
+
+  Future<void> getCanceledOffers() async {
+    try {
+      // Récupérer les offres du vendeur depuis Firestore
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('offres')
+              .where('uid_vendeur', isEqualTo: widget._user.uid)
+              .where('etat', isEqualTo: "annulee")
+              .get();
+
+      setState(() {
+        canceledOffers = querySnapshot.docs.map((doc) => doc.data()).toList();
+      });
+    } catch (e) {
+      print('Erreur lors de la récupération des offres : $e');
+    }
+  }
+
+  Future<void> getNomDuCommerce() async {
+  try {
+    // Récupérer le document du vendeur depuis Firestore en utilisant l'UID de l'utilisateur
+    DocumentSnapshot<Map<String, dynamic>> userDocument =
+        await FirebaseFirestore.instance
+            .collection('vendeurs')
+            .doc(widget._user.uid)
+            .get();
+
+    // Vérifier si le document existe
+    if (userDocument.exists) {
+      // Récupérer le nom du commerce du document
+      setState(() {
+        nomDuCommerce = userDocument['nom_du_commerce'] ?? ""; // Remplacez 'nom_du_commerce' par le nom correct du champ dans votre document
+      });
+    } else {
+      print('Le document du vendeur n\'existe pas.');
+    }
+  } catch (e) {
+    print('Erreur lors de la récupération du nom du commerce : $e');
+  }
+}
+
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         children: <Widget>[
-          // Padding au-dessus du bouton "À Location"
-          Padding(
+         Padding(
             padding: const EdgeInsets.only(top: 24.0, left: 8),
             child: Align(
               alignment: Alignment.centerLeft,
@@ -45,7 +133,7 @@ class _SellerHomepageScreenState extends State<SellerHomepageScreen> {
                             )),
                   );
                 },
-                child: Text(
+                child: const Text(
                   "Revenir à l'interface utilisateur",
                   style: TextStyle(
                     color: Color.fromARGB(160, 0, 0, 0), // Couleur du texte
@@ -75,7 +163,7 @@ class _SellerHomepageScreenState extends State<SellerHomepageScreen> {
                             )),
                   );
                 },
-                child: Text(
+                child: const Text(
                   "Ajouter une offre",
                   style: TextStyle(
                     color: Color.fromARGB(160, 0, 0, 0), // Couleur du texte
@@ -90,10 +178,12 @@ class _SellerHomepageScreenState extends State<SellerHomepageScreen> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  buildCategory("Offres actuelles"),
-                  buildOfferList(),
+                  buildCategory("Offres disponibles"),
+                  buildOfferList(availableOffers),
                   buildCategory("Offres vendues"),
-                  buildOfferList(),
+                  buildOfferList(soldOffers),
+                  buildCategory("Offres annulées"),
+                  buildOfferList(canceledOffers),
                   // Répétez le même modèle pour d'autres catégories...
                 ],
               ),
@@ -104,6 +194,7 @@ class _SellerHomepageScreenState extends State<SellerHomepageScreen> {
     );
   }
 
+  // Fonction inchangée
   Widget buildCategory(String categoryName) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
@@ -112,7 +203,7 @@ class _SellerHomepageScreenState extends State<SellerHomepageScreen> {
         children: [
           Text(
             categoryName,
-            style: TextStyle(color: Colors.black),
+            style: const TextStyle(color: Colors.black),
           ),
           ElevatedButton(
             onPressed: () {
@@ -121,9 +212,9 @@ class _SellerHomepageScreenState extends State<SellerHomepageScreen> {
             },
             style: ButtonStyle(
               padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
+                const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
               ),
-              minimumSize: MaterialStateProperty.all<Size>(Size(0, 0)),
+              minimumSize: MaterialStateProperty.all<Size>(const Size(0, 0)),
             ),
             child: const Text(
               "Tout voir",
@@ -135,18 +226,20 @@ class _SellerHomepageScreenState extends State<SellerHomepageScreen> {
     );
   }
 
-  Widget buildOfferList() {
+  Widget buildOfferList(list) {
     return Align(
       alignment: Alignment.topLeft,
-      child: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width * 2,
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            children: List.generate(20, (index) {
+            children: List.generate(list.length, (index) {
+              Map<String, dynamic> offer = list[index];
+
               return Padding(
                 padding: const EdgeInsets.fromLTRB(4, 0, 0, 4),
-                child: Container(
+                child: SizedBox(
                   height: 150,
                   width: 210,
                   child: Card(
@@ -158,75 +251,73 @@ class _SellerHomepageScreenState extends State<SellerHomepageScreen> {
                         Container(
                           height: 70,
                           width: 210,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.only(
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(10.0),
                               topRight: Radius.circular(10.0),
                             ),
                             image: DecorationImage(
-                              image: AssetImage(
-                                  'assets/launchingpage_image/interieur-boulangerie.jpg'),
+                              image: NetworkImage(offer['image_url']),
                               fit: BoxFit.cover,
                             ),
                           ),
                           child: Align(
                             alignment: Alignment.topRight,
                             child: IconButton(
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.delete,
-                                color: Colors.white, // Couleur du cœur
+                                color: Colors.white,
                               ),
                               onPressed: () {
-                                //
+                                // Ajoutez ici la logique pour supprimer l'offre
                               },
                             ),
                           ),
                         ),
-                        
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(8, 3, 1, 1),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 3, 1, 1),
                           child: Text(
-                            "Boulangerie de la mairie",
-                            style: TextStyle(
-                              color: Colors.black, // Couleur du texte
+                            offer['nom_du_commerce'] ?? '',
+                            style: const TextStyle(
+                              color: Colors.black,
                             ),
                           ),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 1, 1, 1),
                           child: Text(
-                            "Pain au chocolat",
-                            style: TextStyle(
-                              color: Colors.black, // Couleur du texte
+                            offer['nom_offre'] ?? '',
+                            style: const TextStyle(
+                              color: Colors.black,
                             ),
                           ),
                         ),
-                        const Row(
+                        Row(
                           children: [
                             Padding(
-                              padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
+                              padding: const EdgeInsets.fromLTRB(8, 1, 1, 1),
                               child: Text(
-                                "08:00-18:00",
-                                style: TextStyle(
-                                  color: Colors.black, // Couleur du texte
+                                "${offer['heure_recup_debut']}-${offer['heure_recup_fin']}",
+                                style: const TextStyle(
+                                  color: Colors.black,
                                 ),
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
+                              padding: const EdgeInsets.fromLTRB(8, 1, 1, 1),
                               child: Text(
-                                "7 kms",
-                                style: TextStyle(
-                                  color: Colors.black, // Couleur du texte
+                                "7 kms", // Remplacez par le champ approprié
+                                style: const TextStyle(
+                                  color: Colors.black,
                                 ),
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.fromLTRB(16, 0, 8, 0),
+                              padding: const EdgeInsets.fromLTRB(16, 0, 8, 0),
                               child: Text(
-                                "3.00 €",
-                                style: TextStyle(
-                                  color: Colors.black, // Couleur du texte
+                                "${offer['prix']} €",
+                                style: const TextStyle(
+                                  color: Colors.black,
                                 ),
                               ),
                             ),

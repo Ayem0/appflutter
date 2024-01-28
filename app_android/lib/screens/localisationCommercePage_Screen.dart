@@ -83,8 +83,7 @@ class _LocalisationCommerceScreenState
       if (placemarks.isNotEmpty) {
         Placemark placemark = placemarks[0];
         setState(() {
-          address =
-              '${placemark.street}, ${placemark.locality}, ${placemark.country}';
+          address = '${placemark.street}';
           city = '${placemark.locality}';
           country = '${placemark.country}';
         });
@@ -201,17 +200,18 @@ class _LocalisationCommerceScreenState
                     padding:
                         const EdgeInsets.only(right: 16.0, left: 16, bottom: 8),
                     child: Container(
-                      child: Text("Adresse trouvée : ${address}"),
+                      child: Text(
+                          "Adresse trouvée : ${address}, ${city}, ${country}"),
                     ),
                   )
                 : Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0,0,8,0),
-                  child: Center(
+                    padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
+                    child: Center(
                       child: Text(
                           style: TextStyle(fontSize: 20),
                           'Veuillez saisir une localisation pour votre commerce.'),
                     ),
-                ),
+                  ),
           ],
         ),
       ),
@@ -221,27 +221,29 @@ class _LocalisationCommerceScreenState
         color: Colors.white,
         child: ElevatedButton(
           onPressed: () {
-            setLocalisationToSellerDocument(
-                widget._user.uid,
-                address,
-                city,
-                locations.isNotEmpty ? locations[0].longitude : 0,
-                locations.isNotEmpty ? locations[0].latitude : 0,
-                country);
+            if (address != 'Adresse introuvable' && address != "") {
+              setLocalisationToSellerDocument(
+                  widget._user.uid,
+                  address,
+                  city,
+                  locations.isNotEmpty ? locations[0].longitude : 0,
+                  locations.isNotEmpty ? locations[0].latitude : 0,
+                  country);
 
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomepageScreen(
-                  user: widget._user,
-                  address: address,
-                  longitude: locations.isNotEmpty ? locations[0].latitude : 0,
-                  latitude: locations.isNotEmpty ? locations[0].longitude : 0,
-                  city: city,
-                  country: country,
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomepageScreen(
+                    user: widget._user,
+                    address: address,
+                    longitude: locations.isNotEmpty ? locations[0].latitude : 0,
+                    latitude: locations.isNotEmpty ? locations[0].longitude : 0,
+                    city: city,
+                    country: country,
+                  ),
                 ),
-              ),
-            );
+              );
+            }
           },
           child: Text("Valider l'adresse"),
         ),

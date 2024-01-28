@@ -7,8 +7,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LocalisationActuelleScreen extends StatefulWidget {
-  LocalisationActuelleScreen({
-    Key? key,
+   LocalisationActuelleScreen({
+    super.key,
     required User user,
     required String address,
     required double latitude,
@@ -20,8 +20,7 @@ class LocalisationActuelleScreen extends StatefulWidget {
         _latitude = latitude,
         _longitude = longitude,
         _city = city,
-        _country = country,
-        super(key: key);
+        _country = country;
 
   final User _user;
   final String _address;
@@ -76,7 +75,6 @@ class _LocalisationActuelleScreenState
           latitude = b;
           country = '${placemark.country}';
         });
-        print(address);
       } else {
         setState(() {
           address = 'Adresse introuvable';
@@ -88,8 +86,8 @@ class _LocalisationActuelleScreenState
     }
   }
 
-  Future<void> addLocalisationToUser(String userId, String adresse,
-      String city, double longitude, double latitude, String country) async {
+  Future<void> addLocalisationToUser(String userId, String adresse, String city,
+      double longitude, double latitude, String country) async {
     // Ajoutez un document dans la collection 'utilisateurs' avec le champ 'isSeller'
     await FirebaseFirestore.instance
         .collection('utilisateurs')
@@ -110,7 +108,6 @@ class _LocalisationActuelleScreenState
         locations = await locationFromAddress(controller.text);
 
         if (locations.isNotEmpty) {
-          print(locations);
           setState(() {
             _selectedLocation = LatLng(
               locations[0].latitude,
@@ -137,11 +134,11 @@ class _LocalisationActuelleScreenState
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.only(top: 20),
+              padding: const EdgeInsets.only(top: 20),
               child: Container(
                 alignment: Alignment.centerLeft,
                 child: IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.black),
+                  icon: const Icon(Icons.arrow_back, color: Colors.black),
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -159,7 +156,7 @@ class _LocalisationActuelleScreenState
                     onPressed: () {
                       controller.clear();
                     },
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                   ),
                   IconButton(
                     onPressed: () {
@@ -167,7 +164,7 @@ class _LocalisationActuelleScreenState
                       controller.closeView(controller.text);
                       _closeKeyboard();
                     },
-                    icon: Icon(Icons.search),
+                    icon: const Icon(Icons.search),
                   ),
                 ],
                 builder: (context, controller) {
@@ -180,21 +177,21 @@ class _LocalisationActuelleScreenState
                         onPressed: () {
                           _handleSearch();
                         },
-                        icon: Icon(Icons.search),
+                        icon: const Icon(Icons.search),
                       ),
                     ],
                   );
                 },
                 suggestionsBuilder: (context, controller) {
                   return [
-                    Wrap(),
+                    const Wrap(),
                   ];
                 },
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Container(
+              child: SizedBox(
                 height: 440,
                 width: 320,
                 child: FlutterMap(
@@ -216,7 +213,7 @@ class _LocalisationActuelleScreenState
                                 point: _selectedLocation!,
                                 width: 30,
                                 height: 30,
-                                child: Icon(Icons.place),
+                                child: const Icon(Icons.place),
                               ),
                             ]
                           : [],
@@ -227,9 +224,7 @@ class _LocalisationActuelleScreenState
             ),
             Padding(
               padding: const EdgeInsets.only(right: 16.0, left: 16, bottom: 8),
-              child: Container(
-                child: Text("Adresse trouvée : ${address}"),
-              ),
+              child: Text("Adresse trouvée : $address, $city, $country"),
             ),
           ],
         ),
@@ -238,23 +233,25 @@ class _LocalisationActuelleScreenState
         color: Colors.white,
         child: ElevatedButton(
           onPressed: () {
-            addLocalisationToUser(
-                widget._user.uid, address, city, longitude, latitude, country);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomepageScreen(
-                  user: widget._user,
-                  address: address,
-                  longitude: longitude,
-                  latitude: latitude,
-                  city: city,
-                  country: country,
+            if (address != 'Adresse introuvable' && address != "") {
+              addLocalisationToUser(widget._user.uid, address, city, longitude,
+                  latitude, country);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomepageScreen(
+                    user: widget._user,
+                    address: address,
+                    longitude: longitude,
+                    latitude: latitude,
+                    city: city,
+                    country: country,
+                  ),
                 ),
-              ),
-            );
+              );
+            }
           },
-          child: Text("Valider l'adresse"),
+          child: const Text("Valider l'adresse"),
         ),
       ),
     );

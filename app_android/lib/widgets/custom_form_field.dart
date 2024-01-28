@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomFormField extends StatelessWidget {
   const CustomFormField({
-    Key? key,
+    super.key,
     required TextEditingController controller,
     required FocusNode focusNode,
     required TextInputType keyboardType,
@@ -18,8 +18,7 @@ class CustomFormField extends StatelessWidget {
         _inputAction = inputAction,
         _label = label,
         _hint = hint,
-        _validator = validator,
-        super(key: key);
+        _validator = validator;
 
   final TextEditingController _emailController;
   final FocusNode _emailFocusNode;
@@ -45,38 +44,38 @@ class CustomFormField extends StatelessWidget {
       validator: (value) => _validator(value!),
       decoration: InputDecoration(
         labelText: _label,
-        labelStyle: TextStyle(color: Colors.blueAccent),
+        labelStyle: const TextStyle(color: Colors.blueAccent),
         hintText: _hint,
-        hintStyle: TextStyle(
+        hintStyle: const TextStyle(
           color: Colors.blueAccent,
         ),
-        errorStyle: TextStyle(
+        errorStyle: const TextStyle(
           color: Colors.redAccent,
           fontWeight: FontWeight.bold,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: Colors.blueAccent,
             width: 2,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: Colors.blueAccent,
           ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: Colors.redAccent,
             width: 2,
           ),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: Colors.redAccent,
             width: 2,
           ),

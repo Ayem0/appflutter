@@ -14,7 +14,7 @@ class _LaunchingpageScreenState extends State<LaunchingpageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 100, 16, 16),
         child: Column(
@@ -26,11 +26,11 @@ class _LaunchingpageScreenState extends State<LaunchingpageScreen> {
               'assets/launchingpage_image/logo.png',
               height: 200,
             ),
-            Spacer(
+            const Spacer(
               flex: 20,
             ),
             // Texte
-            Text(
+            const Text(
               'Avec notre application, finis le gaspillage !',
               style: TextStyle(
                 fontSize: 20,
@@ -40,7 +40,7 @@ class _LaunchingpageScreenState extends State<LaunchingpageScreen> {
             ),
 
             // Espacement entre le texte et le bouton du bas
-            Spacer(
+            const Spacer(
               flex: 15,
             ),
 
@@ -52,13 +52,13 @@ class _LaunchingpageScreenState extends State<LaunchingpageScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SignInPageScreen()),
+                            builder: (context) => const SignInPageScreen()),
                       );
                     },
-                    child: Text('Se connecter'),
+                    child: const Text('Se connecter'),
                   ),
                 ),
-                SizedBox(width: 8.0),
+                const SizedBox(width: 8.0),
                 Expanded(
                   child: FilledButton.tonal(
                     onPressed: () {
@@ -66,10 +66,10 @@ class _LaunchingpageScreenState extends State<LaunchingpageScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => RegisterPageScreen()),
+                            builder: (context) => const RegisterPageScreen()),
                       );
                     },
-                    child: Text('Créer un compte'),
+                    child: const Text('Créer un compte'),
                   ),
                 ),
               ],

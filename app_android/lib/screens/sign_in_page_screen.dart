@@ -49,8 +49,7 @@ class _SignInPageScreenState extends State<SignInPageScreen> {
           builder: (context) => HomepageScreen(
             user: user,
 
-
-            // a remplacer avec resultat de requete sur bdd 
+            // a remplacer avec resultat de requete sur bdd
             city: "",
             address: "",
             longitude: 0,
@@ -72,7 +71,7 @@ class _SignInPageScreenState extends State<SignInPageScreen> {
         _passwordFocusNode.unfocus();
       },
       child: Scaffold(
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16.0, 40, 16, 50),
@@ -85,7 +84,7 @@ class _SignInPageScreenState extends State<SignInPageScreen> {
                   'assets/launchingpage_image/logo.png',
                   height: 150,
                 ),
-                SizedBox(height: 20.0),
+                const SizedBox(height: 20.0),
                 //Bouton Google Sign-In en dessous
                 SignInButton(
                   Buttons.google,
@@ -108,7 +107,7 @@ class _SignInPageScreenState extends State<SignInPageScreen> {
                             latitude: 0,
                             longitude: 0,
                             country: "",
-                            ),
+                          ),
                         ),
                       );
                       print(
@@ -121,14 +120,14 @@ class _SignInPageScreenState extends State<SignInPageScreen> {
                     }
                   },
                 ),
-                
-                SizedBox(height: 20.0),
+
+                const SizedBox(height: 20.0),
                 // Formulaire avec e-mail et mot de passe en dessous
                 FutureBuilder(
                   future: _initializeFirebase(),
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
-                      return Text('Error initializing Firebase');
+                      return const Text('Error initializing Firebase');
                     } else if (snapshot.connectionState ==
                         ConnectionState.done) {
                       return SignInForm(
@@ -136,21 +135,21 @@ class _SignInPageScreenState extends State<SignInPageScreen> {
                         passwordFocusNode: _passwordFocusNode,
                       );
                     }
-                    return CircularProgressIndicator(
+                    return const CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(
                         Colors.blueAccent,
                       ),
                     );
                   },
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
                 // Lien "Mot de passe oublié ?" en dessous
                 Row(
                   children: [
                     // Texte "Mot de passe oublié ?"
-                    Text(
+                    const Text(
                       'Mot de passe oublié ?',
                       style: TextStyle(
                         color:
@@ -159,14 +158,14 @@ class _SignInPageScreenState extends State<SignInPageScreen> {
                     ),
 
                     // Espacement entre les textes
-                    SizedBox(width: 6.0),
+                    const SizedBox(width: 6.0),
 
                     // Texte avec un lien "Cliquez ici"
                     GestureDetector(
                       onTap: () {
                         // Logique pour le texte "Cliquez ici"
                       },
-                      child: Text.rich(
+                      child: const Text.rich(
                         TextSpan(
                           text: 'Cliquez ici',
                           style: TextStyle(
@@ -180,28 +179,28 @@ class _SignInPageScreenState extends State<SignInPageScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 100.0),
+                const SizedBox(height: 100.0),
                 // Bouton "Se connecter" en dessous
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       'Vous n\'avez pas de compte ?',
                       style: TextStyle(
                         color: Color.fromARGB(255, 6, 44, 41),
                       ),
                     ),
-                    SizedBox(width: 6.0),
+                    const SizedBox(width: 6.0),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => RegisterPageScreen()),
+                              builder: (context) => const RegisterPageScreen()),
                         );
                         // Logique pour le texte "S'inscrire"
                       },
-                      child: Text.rich(
+                      child: const Text.rich(
                         TextSpan(
                           text: 'S\'inscrire',
                           style: TextStyle(

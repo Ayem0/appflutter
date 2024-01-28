@@ -35,7 +35,7 @@ class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
   }
 
   void _handleSearch() async {
-     if (controller.text.isNotEmpty) {
+    if (controller.text.isNotEmpty) {
       try {
         locations = await locationFromAddress(controller.text);
 
@@ -60,6 +60,7 @@ class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
       }
     }
   }
+
   Future<void> addLocalisationToUser(String userId) async {
     // Ajoutez un document dans la collection 'utilisateurs' avec le champ 'isSeller'
     await FirebaseFirestore.instance
@@ -84,8 +85,7 @@ class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
       if (placemarks.isNotEmpty) {
         Placemark placemark = placemarks[0];
         setState(() {
-          address =
-              '${placemark.street}';
+          address = '${placemark.street}';
           city = '${placemark.locality}';
           country = '${placemark.country}';
         });
@@ -202,7 +202,8 @@ class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
                     padding:
                         const EdgeInsets.only(right: 16.0, left: 16, bottom: 8),
                     child: Container(
-                      child: Text("Adresse trouvée : ${address}"),
+                      child: Text(
+                          "Adresse trouvée : ${address}, ${city}, ${country}"),
                     ),
                   )
                 : Container(),
@@ -215,20 +216,22 @@ class _LocalisationChoisirScreenState extends State<LocalisationChoisirScreen> {
         color: Colors.white,
         child: ElevatedButton(
           onPressed: () {
-            addLocalisationToUser(widget._user.uid);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomepageScreen(
-                  user: widget._user,
-                  address: address,
-                  longitude: locations.isNotEmpty ? locations[0].latitude : 0,
-                  latitude: locations.isNotEmpty ? locations[0].longitude : 0,
-                  city: city,
-                  country: country,
+            if (address != 'Adresse introuvable' && address != "") {
+              addLocalisationToUser(widget._user.uid);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomepageScreen(
+                    user: widget._user,
+                    address: address,
+                    longitude: locations.isNotEmpty ? locations[0].latitude : 0,
+                    latitude: locations.isNotEmpty ? locations[0].longitude : 0,
+                    city: city,
+                    country: country,
+                  ),
                 ),
-              ),
-            );
+              );
+            }
           },
           child: Text("Valider l'adresse"),
         ),

@@ -1,8 +1,6 @@
 import 'package:app_android/screens/localisationGoogleActuelle_screen.dart';
 import 'package:app_android/screens/localisationGoogleChoisir_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:app_android/screens/localisationChoisirPage_screen.dart';
-import 'package:app_android/screens/localisationActuellePage_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
@@ -66,7 +64,6 @@ class _LocalisationGooglePageScreenState extends State<LocalisationGooglePageScr
                 try {
                   // Appelez _getAddressFromCoordinates avec la nouvelle position
                   await _getAddressFromCoordinates();
-                  await _getCityFromCoordinates();
                   print('$_city');
                   print('$_address');
                   Navigator.push(
@@ -150,34 +147,13 @@ class _LocalisationGooglePageScreenState extends State<LocalisationGooglePageScr
         Placemark placemark = placemarks[0];
         setState(() {
           _address =
-              '${placemark.street}, ${placemark.locality}, ${placemark.country}';
+              '${placemark.street}';
+              _city = '${placemark.locality}';
           _country = '${placemark.country}';
         });
       } else {
         setState(() {
           _address = 'Adresse introuvable';
-        });
-      }
-    } catch (e) {
-      print('Erreur lors de la récupération de l\'adresse : $e');
-    }
-  }
-    Future<void> _getCityFromCoordinates() async {
-    try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        _currentPosition!.latitude,
-        _currentPosition!.longitude,
-      );
-
-      if (placemarks.isNotEmpty) {
-        Placemark placemark = placemarks[0];
-        setState(() {
-          _city =
-              '${placemark.locality}';
-        });
-      } else {
-        setState(() {
-          _city = 'Adresse introuvable';
         });
       }
     } catch (e) {

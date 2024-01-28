@@ -1,18 +1,17 @@
-import 'dart:io';
-import 'package:app_android/screens/localisationCommercePage_Screen.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:app_android/screens/homepage_screen.dart';
+import 'package:app_android/screens/homepageSeller_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
+
+import 'package:image_picker/image_picker.dart';
 
 class CreateOfferScreen extends StatefulWidget {
   const CreateOfferScreen({
-    Key? key,
+    super.key,
     required User user,
-  })  : _user = user,
-        super(key: key);
+  })  : _user = user;
 
   final User _user;
 
@@ -22,9 +21,17 @@ class CreateOfferScreen extends StatefulWidget {
 
 class _CreateOfferScreenState extends State<CreateOfferScreen> {
   File? _image;
-  final TextEditingController _nomOffreController =
-      TextEditingController();
+  final TextEditingController _nomOffreController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _prixController = TextEditingController();
+  final TextEditingController _quantiteController = TextEditingController();
+  int _selectedDuration = 1; // Default duration is set to 1 day
+  TimeOfDay heureDebut = TimeOfDay.now();
+  TimeOfDay heureFin = TimeOfDay.now();
+  // Time options for recovery
+
+  // Duration options
+  List<int> durations = [1, 2];
 
   // Méthode pour sélectionner une image depuis la galerie
   Future<void> _pickImage() async {
@@ -39,39 +46,109 @@ class _CreateOfferScreenState extends State<CreateOfferScreen> {
     }
   }
 
-  static Future<void> createOffer(String userId, String nomDuCommerce,
-      String description, String imageUrl) async {
-    // Ajoutez un document dans la collection 'vendeurs' avec les informations du vendeur
-    await FirebaseFirestore.instance.collection('offres').doc(userId).set({
-      'uid_vendeur': userId,
-      'nom_du_commerce': nomDuCommerce,
-      'nom_offre': "",
-      'description': description,
-      'image_url': imageUrl,
-      'etat': "disponible",
-      'duree': 1,
-      'nombre': 1,
-      'prix': 3.99,
-      'adresse': "",
-      'city': "",
-      'country': "",
-      'latitude': 0,
-      'longitude': 1,
-      'heure_recup': "13:00-14:00",
-      'date_creation': "",
-
-      // Ajoutez d'autres champs si nécessaire
-    });
+  String getCleanHeureRecup(TimeOfDay heure) {
+    // Utilise la méthode toString pour obtenir l'heure au format "HH:mm"
+    final String formattedHour = heure.toString().substring(10, 15);
+    return formattedHour;
   }
 
-  Future<String> uploadImage(File image) async {
+  Future<Map<String, dynamic>> getSellerInformation(String userId) async {
+    try {
+      // Récupère le document utilisateur
+      DocumentSnapshot userDocument = await FirebaseFirestore.instance
+          .collection('vendeurs')
+          .doc(userId)
+          .get();
+
+      // Vérifie si le document existe
+      if (userDocument.exists) {
+        Map<String, dynamic> userData =
+            userDocument.data() as Map<String, dynamic>;
+        if (userData['adresse'] != null) {
+          return userDocument.data() as Map<String, dynamic>;
+        } else {
+          return {};
+        }
+        // Renvoie les données du document sous forme de Map
+      } else {
+        return {};
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération des informations utilisateur : $e');
+      return {};
+    }
+  }
+
+  Future<void> createOffer(String userId) async {
+    try {
+      // Obtenez les informations du vendeur
+      Map<String, dynamic> sellerInfo = await getSellerInformation(userId);
+
+      if (sellerInfo.isNotEmpty) {
+        String documentName =
+            'offre_${userId}_${DateTime.now().millisecondsSinceEpoch}';
+
+        // Ajoutez un document dans la collection 'offres' avec les informations de l'offre
+        await FirebaseFirestore.instance
+            .collection('offres')
+            .doc(documentName)
+            .set({
+          'uid_vendeur': userId,
+          'nom_du_commerce': sellerInfo['nom_du_commerce'] ?? '',
+          'nom_offre': _nomOffreController.text,
+          'description': _descriptionController.text,
+          'image_url': '',
+          'etat': 'disponible',
+          'duree': _selectedDuration,
+          'quantite': int.parse(_quantiteController.text),
+          'prix': double.parse(_prixController.text),
+          'adresse': sellerInfo['adresse'] ?? '',
+          'ville': sellerInfo['ville'] ?? '',
+          'pays': sellerInfo['pays'] ?? '',
+          'latitude': sellerInfo['latitude'] ?? 0,
+          'longitude': sellerInfo['longitude'] ?? 1,
+          'heure_recup_debut': getCleanHeureRecup(heureDebut),
+          'heure_recup_fin': getCleanHeureRecup(heureFin),
+          'date_creation': FieldValue.serverTimestamp(),
+          // Ajoutez d'autres champs si nécessaire
+        });
+
+        // Si une image est sélectionnée, téléchargez l'image
+        if (_image != null) {
+          String imageUrl = await uploadImage(_image!, userId);
+          // Mettez à jour le document avec l'URL de l'image
+          await FirebaseFirestore.instance
+              .collection('offres')
+              .doc(documentName)
+              .update({'image_url': imageUrl});
+        }
+
+        // Naviguez vers la page de localisation du commerce
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SellerHomepageScreen(
+              user: widget._user,
+            ),
+          ),
+        );
+      } else {
+        // Gérer le cas où les informations du vendeur ne sont pas disponibles
+        print('Informations du vendeur non disponibles');
+      }
+    } catch (e) {
+      print('Erreur lors de la création de l\'offre : $e');
+    }
+  }
+
+  Future<String> uploadImage(File image, userId) async {
     // Générez un nom unique pour l'image
     String imageName =
-        'vendeur_${DateTime.now().millisecondsSinceEpoch.toString()}';
+        'offre_${userId}_${DateTime.now().millisecondsSinceEpoch}';
 
     // Référence du fichier dans Firebase Storage
     Reference storageReference =
-        FirebaseStorage.instance.ref().child('images/$imageName.jpg');
+        FirebaseStorage.instance.ref().child('images_offres/$imageName.jpg');
 
     // Téléchargez l'image sur Firebase Storage
     await storageReference.putFile(image);
@@ -85,20 +162,20 @@ class _CreateOfferScreenState extends State<CreateOfferScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 20, 16, 16),
+          padding: const EdgeInsets.fromLTRB(16.0, 16, 16, 16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: EdgeInsets.only(top: 20),
+                padding: const EdgeInsets.only(top: 4),
                 child: Container(
                   alignment: Alignment.centerLeft,
                   child: IconButton(
-                    icon: Icon(Icons.arrow_back, color: Colors.black),
+                    icon: const Icon(Icons.arrow_back, color: Colors.black),
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -111,10 +188,10 @@ class _CreateOfferScreenState extends State<CreateOfferScreen> {
               ),
               TextFormField(
                 controller: _nomOffreController,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.black, // Couleur du texte de l'étiquette
                 ),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Nom de l'offre",
                   labelStyle: TextStyle(
                     color: Colors.black, // Couleur du texte de l'étiquette
@@ -123,61 +200,139 @@ class _CreateOfferScreenState extends State<CreateOfferScreen> {
               ),
               TextFormField(
                 controller: _descriptionController,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.black, // Couleur du texte de l'étiquette
                 ),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Description',
                   labelStyle: TextStyle(
                     color: Colors.black, // Couleur du texte de l'étiquette
                   ),
                 ),
               ),
+              DropdownButtonFormField<int>(
+                value: _selectedDuration,
+                onChanged: (int? value) {
+                  setState(() {
+                    _selectedDuration = value!;
+                  });
+                },
+                items: durations.map((int duration) {
+                  return DropdownMenuItem<int>(
+                    value: duration,
+                    child: Text('$duration jour${duration > 1 ? 's' : ''}'),
+                  );
+                }).toList(),
+                decoration: const InputDecoration(
+                  labelText: 'Durée',
+                  labelStyle: TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              // New field for Quantity
               TextFormField(
-                controller: _descriptionController,
-                style: TextStyle(
-                  color: Colors.black, // Couleur du texte de l'étiquette
+                controller: _quantiteController,
+                keyboardType: TextInputType.number,
+                style: const TextStyle(
+                  color: Colors.black,
                 ),
-                decoration: InputDecoration(
-                  labelText: 'Description',
+                decoration: const InputDecoration(
+                  labelText: 'Quantité',
                   labelStyle: TextStyle(
-                    color: Colors.black, // Couleur du texte de l'étiquette
+                    color: Colors.black,
                   ),
                 ),
               ),
-              SizedBox(height: 20.0),
+              // New field for Price
+              TextFormField(
+                controller: _prixController,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                style: const TextStyle(
+                  color: Colors.black,
+                ),
+                decoration: const InputDecoration(
+                  labelText: 'Prix',
+                  labelStyle: TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              Column(
+                children: [
+                  const Row(
+                    children: [Text('Heure de récupération')],
+                  ),
+                  const SizedBox(height: 8.0),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          // heure de début
+                          final TimeOfDay? timeOfDay = await showTimePicker(
+                            context: context,
+                            initialTime: heureDebut,
+                            initialEntryMode: TimePickerEntryMode.inputOnly,
+                            builder: (BuildContext context, Widget? child) {
+                              return MediaQuery(
+                                data: MediaQuery.of(context)
+                                    .copyWith(alwaysUse24HourFormat: true),
+                                child: child!,
+                              );
+                            },
+                          );
+                          if (timeOfDay != null) {
+                            setState(() {
+                              heureDebut = timeOfDay;
+                            });
+                          }
+                        },
+                        child: const Text('Heure début'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          // heure de début
+                          final TimeOfDay? timeOfDay = await showTimePicker(
+                            context: context,
+                            initialTime: heureFin,
+                            initialEntryMode: TimePickerEntryMode.inputOnly,
+                            builder: (BuildContext context, Widget? child) {
+                              return MediaQuery(
+                                data: MediaQuery.of(context)
+                                    .copyWith(alwaysUse24HourFormat: true),
+                                child: child!,
+                              );
+                            },
+                          );
+                          if (timeOfDay != null) {
+                            setState(() {
+                              heureFin = timeOfDay;
+                            });
+                          }
+                        },
+                        child: const Text('Heure fin'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20.0),
               ElevatedButton(
                 onPressed: () {
                   _pickImage();
                 },
-                child: Text('Ajouter une image'),
+                child: const Text('Ajouter une image'),
               ),
-              SizedBox(height: 20.0),
-              FilledButton.tonal(
+              const SizedBox(height: 20.0),
+              ElevatedButton(
                 onPressed: () async {
-                  // logique d'ajout de commerce
-
-                  if (_image != null) {
-                    String imageUrl = await uploadImage(_image!);
-                    createOffer(
-                      widget._user.uid,
-                      _nomOffreController.text,
-                      _descriptionController.text,
-                      imageUrl,
-                    );
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LocalisationCommerceScreen(
-                          user: widget._user,
-                        ),
-                      ),
-                    );
-                  } else {
-                    // Gérer le cas où aucune image n'est sélectionnée
-                  }
+                  // Ajout de l'offre et un upload de l'image
+                  await createOffer(widget._user.uid);
                 },
-                child: Text('Créer une offre'),
+                child: const Text('Créer une offre'),
               ),
             ],
           ),

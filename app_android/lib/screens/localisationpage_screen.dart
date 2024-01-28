@@ -6,9 +6,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
 class LocalisationPageScreen extends StatefulWidget {
-  const LocalisationPageScreen({Key? key, required User user})
-      : _user = user,
-        super(key: key);
+  const LocalisationPageScreen({super.key, required User user})
+      : _user = user;
   final User _user;
   @override
   State<LocalisationPageScreen> createState() => _LocalisationPageScreenState();
@@ -17,6 +16,7 @@ class LocalisationPageScreen extends StatefulWidget {
 class _LocalisationPageScreenState extends State<LocalisationPageScreen> {
   late User _user;
   String _address = '';
+  String foundAddress = "";
   String _city = "";
   String _country = '';
   Position? _currentPosition;
@@ -58,20 +58,20 @@ class _LocalisationPageScreenState extends State<LocalisationPageScreen> {
                 setState(() {
                   _currentPosition = position;
                 });
-
-                print(
-                    'Latitude: ${position.latitude}, Longitude: ${position.longitude}');
                 try {
                   // Appelez _getAddressFromCoordinates avec la nouvelle position
                   await _getAddressFromCoordinates();
-                  await _getCityFromCoordinates();
-                  print('$_city');
-                  print('$_address');
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => LocalisationActuelleScreen(
-                            user: _user, address: _address, latitude: _currentPosition!.latitude, longitude: _currentPosition!.longitude, city: _city, country: _country,)),
+                              user: _user,
+                              address: _address,
+                              latitude: _currentPosition!.latitude,
+                              longitude: _currentPosition!.longitude,
+                              city: _city,
+                              country: _country,
+                            )),
                   );
                 } catch (e) {
                   print("Erreur lors de la récupération de l'adresse : $e");
@@ -147,35 +147,13 @@ class _LocalisationPageScreenState extends State<LocalisationPageScreen> {
       if (placemarks.isNotEmpty) {
         Placemark placemark = placemarks[0];
         setState(() {
-          _address =
-              '${placemark.street}, ${placemark.locality}, ${placemark.country}';
+          _address = '${placemark.street}';
           _country = '${placemark.country}';
+          _city = '${placemark.locality}';
         });
       } else {
         setState(() {
           _address = 'Adresse introuvable';
-        });
-      }
-    } catch (e) {
-      print('Erreur lors de la récupération de l\'adresse : $e');
-    }
-  }
-    Future<void> _getCityFromCoordinates() async {
-    try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        _currentPosition!.latitude,
-        _currentPosition!.longitude,
-      );
-
-      if (placemarks.isNotEmpty) {
-        Placemark placemark = placemarks[0];
-        setState(() {
-          _city =
-              '${placemark.locality}';
-        });
-      } else {
-        setState(() {
-          _city = 'Adresse introuvable';
         });
       }
     } catch (e) {

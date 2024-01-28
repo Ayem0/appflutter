@@ -1,15 +1,15 @@
 import 'package:app_android/screens/localisationGoogle_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '/widgets/homepage/homepage_mon_compte.dart';
-import '/widgets/homepage/homepage_parcourir.dart';
-import '/widgets/homepage/homepage_accueil.dart';
+import 'homepage/homepage_mon_compte.dart';
+import 'homepage/homepage_parcourir.dart';
+import 'homepage/homepage_accueil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class HomepageScreen extends StatefulWidget {
   const HomepageScreen({
-    Key? key,
+    super.key,
     required User user,
     required String address,
     required double latitude,
@@ -22,8 +22,7 @@ class HomepageScreen extends StatefulWidget {
         _latitude = latitude,
         _longitude = longitude,
         _city = city,
-        _country = country,
-        super(key: key);
+        _country = country;
 
   final User _user;
   final String _address;
@@ -120,7 +119,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
         content = homepageAccueil(user: _user, longitude: _longitude, latitude: _latitude, city: _city, address: _address, country: _country,);
         break;
       case 1:
-        content = homepageParcourir(user: _user,longitude: _longitude, latitude: _latitude, city: _city, address: _address, country: _country,);
+        content = HomepageParcourir(user: _user,longitude: _longitude, latitude: _latitude, city: _city, address: _address, country: _country,);
         break;
       case 2:
         content = homepageMoncompte(user: _user,longitude: _longitude, latitude: _latitude, city: _city, address: _address, country: _country,);
@@ -130,7 +129,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
     }
   } else {
     // Si les données ne sont pas encore chargées, affichez un indicateur de chargement ou ne rien afficher
-    content = Center(
+    content = const Center(
       child: CircularProgressIndicator(strokeAlign:  1),
     );// Remplacez ceci par l'indicateur de chargement souhaité
   }
@@ -142,16 +141,16 @@ class _HomepageScreenState extends State<HomepageScreen> {
             color: Color.fromARGB(255, 32, 32, 32), fontSize: 14),
         selectedLabelStyle: const TextStyle(
             color: Color.fromARGB(255, 32, 32, 32), fontSize: 14),
-        selectedItemColor: Color.fromARGB(255, 32, 32, 32),
+        selectedItemColor: const Color.fromARGB(255, 32, 32, 32),
         backgroundColor: Colors.white,
-        unselectedItemColor: Color.fromARGB(255, 32, 32, 32),
+        unselectedItemColor: const Color.fromARGB(255, 32, 32, 32),
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
             _currentIndex = index;
           });
         },
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home, color: Color.fromARGB(255, 32, 32, 32)),
             label: 'Accueil',

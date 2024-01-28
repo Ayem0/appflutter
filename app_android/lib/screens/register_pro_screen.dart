@@ -9,7 +9,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 class RegisterProScreen extends StatefulWidget {
   const RegisterProScreen({
-    Key? key,
+    super.key,
     required User user,
     required String address,
     required double latitude,
@@ -21,8 +21,7 @@ class RegisterProScreen extends StatefulWidget {
         _latitude = latitude,
         _longitude = longitude,
         _city = city,
-        _country = country,
-        super(key: key);
+        _country = country;
 
   final User _user;
   final String _address;
@@ -70,21 +69,21 @@ class _RegisterProScreenState extends State<RegisterProScreen> {
     // Ajoutez un document dans la collection 'vendeurs' avec les informations du vendeur
     await FirebaseFirestore.instance.collection('vendeurs').doc(userId).set({
       'uid_utilisateur': userId,
-      'nom du commerce': nomDuCommerce,
+      'nom_du_commerce': nomDuCommerce,
       'description': description,
       'image_url': imageUrl,
       // Ajoutez d'autres champs si nécessaire
     });
   }
 
-  Future<String> uploadImage(File image) async {
+  Future<String> uploadImage(File image, userId) async {
     // Générez un nom unique pour l'image
     String imageName =
-        'vendeur_${DateTime.now().millisecondsSinceEpoch.toString()}';
+        'vendeur_${userId}_${DateTime.now().millisecondsSinceEpoch}';
 
     // Référence du fichier dans Firebase Storage
     Reference storageReference =
-        FirebaseStorage.instance.ref().child('images/$imageName.jpg');
+        FirebaseStorage.instance.ref().child('images_vendeurs/$imageName.jpg');
 
     // Téléchargez l'image sur Firebase Storage
     await storageReference.putFile(image);
@@ -98,7 +97,7 @@ class _RegisterProScreenState extends State<RegisterProScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16.0, 20, 16, 16),
@@ -107,11 +106,11 @@ class _RegisterProScreenState extends State<RegisterProScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: EdgeInsets.only(top: 20),
+                padding: const EdgeInsets.only(top: 20),
                 child: Container(
                   alignment: Alignment.centerLeft,
                   child: IconButton(
-                    icon: Icon(Icons.arrow_back, color: Colors.black),
+                    icon: const Icon(Icons.arrow_back, color: Colors.black),
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,
@@ -136,10 +135,10 @@ class _RegisterProScreenState extends State<RegisterProScreen> {
               ),
               TextFormField(
                 controller: _nomDuCommerceController,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.black, // Couleur du texte de l'étiquette
                 ),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Nom du commerce',
                   labelStyle: TextStyle(
                     color: Colors.black, // Couleur du texte de l'étiquette
@@ -148,31 +147,31 @@ class _RegisterProScreenState extends State<RegisterProScreen> {
               ),
               TextFormField(
                 controller: _descriptionController,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.black, // Couleur du texte de l'étiquette
                 ),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Description',
                   labelStyle: TextStyle(
                     color: Colors.black, // Couleur du texte de l'étiquette
                   ),
                 ),
               ),
-              SizedBox(height: 20.0),
+              const SizedBox(height: 20.0),
               ElevatedButton(
                 onPressed: () {
                   _pickImage();
                 },
-                child: Text('Ajouter une image'),
+                child: const Text('Ajouter une image'),
               ),
-              SizedBox(height: 20.0),
+              const SizedBox(height: 20.0),
               FilledButton.tonal(
                 onPressed: () async {
                   // logique d'ajout de commerce
 
                   if (_image != null) {
                     setUserSeller(widget._user.uid);
-                    String imageUrl = await uploadImage(_image!);
+                    String imageUrl = await uploadImage(_image!, widget._user.uid);
                     createSellerDocument(
                       widget._user.uid,
                       _nomDuCommerceController.text,
@@ -191,7 +190,7 @@ class _RegisterProScreenState extends State<RegisterProScreen> {
                     // Gérer le cas où aucune image n'est sélectionnée
                   }
                 },
-                child: Text('Ajouter mon commerce'),
+                child: const Text('Ajouter mon commerce'),
               ),
             ],
           ),

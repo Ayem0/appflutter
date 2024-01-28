@@ -94,8 +94,8 @@ class _LocalisationGoogleActuelleScreenState
         .collection('utilisateurs')
         .doc(userId)
         .set({
-          'email': widget._user.email,
-          'prenom': widget._user.displayName,
+      'email': widget._user.email,
+      'prenom': widget._user.displayName,
       'isSeller': false,
       'adresse': widget._address,
       'ville': city,
@@ -218,7 +218,7 @@ class _LocalisationGoogleActuelleScreenState
                                 point: _selectedLocation!,
                                 width: 30,
                                 height: 30,
-                                child: Icon(Icons.place),
+                                child: const Icon(Icons.place),
                               ),
                             ]
                           : [],
@@ -230,7 +230,8 @@ class _LocalisationGoogleActuelleScreenState
             Padding(
               padding: const EdgeInsets.only(right: 16.0, left: 16, bottom: 8),
               child: Container(
-                child: Text("Adresse trouvée : ${address}"),
+                child:
+                    Text("Adresse trouvée : $address, $city , $country"),
               ),
             ),
           ],
@@ -240,23 +241,24 @@ class _LocalisationGoogleActuelleScreenState
         color: Colors.white,
         child: ElevatedButton(
           onPressed: () {
-            setLocalisationToGoogleUser(
-                widget._user.uid);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomepageScreen(
-                  user: widget._user,
-                  address: address,
-                  longitude: longitude,
-                  latitude: latitude,
-                  city: city,
-                  country: country,
+            if (address != 'Adresse introuvable' && address != "") {
+              setLocalisationToGoogleUser(widget._user.uid);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomepageScreen(
+                    user: widget._user,
+                    address: address,
+                    longitude: longitude,
+                    latitude: latitude,
+                    city: city,
+                    country: country,
+                  ),
                 ),
-              ),
-            );
+              );
+            }
           },
-          child: Text("Valider l'adresse"),
+          child: const Text("Valider l'adresse"),
         ),
       ),
     );

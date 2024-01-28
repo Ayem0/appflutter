@@ -8,10 +8,9 @@ import 'package:latlong2/latlong.dart';
 
 class LocalisationGoogleChoisirScreen extends StatefulWidget {
   const LocalisationGoogleChoisirScreen({
-    Key? key,
+    super.key,
     required User user,
-  })  : _user = user,
-        super(key: key);
+  })  : _user = user;
 
   final User _user;
 
@@ -20,7 +19,8 @@ class LocalisationGoogleChoisirScreen extends StatefulWidget {
       _LocalisationGoogleChoisirScreenState();
 }
 
-class _LocalisationGoogleChoisirScreenState extends State<LocalisationGoogleChoisirScreen> {
+class _LocalisationGoogleChoisirScreenState
+    extends State<LocalisationGoogleChoisirScreen> {
   final TextEditingController searchController = TextEditingController();
   final SearchController controller = SearchController();
   LatLng? _selectedLocation;
@@ -30,14 +30,12 @@ class _LocalisationGoogleChoisirScreenState extends State<LocalisationGoogleChoi
   List<Location> locations = [];
   bool _searched = false;
 
- @override
- 
   void _closeKeyboard() {
     FocusScope.of(context).requestFocus(FocusNode());
   }
 
   void _handleSearch() async {
-     if (controller.text.isNotEmpty) {
+    if (controller.text.isNotEmpty) {
       try {
         locations = await locationFromAddress(controller.text);
 
@@ -62,14 +60,15 @@ class _LocalisationGoogleChoisirScreenState extends State<LocalisationGoogleChoi
       }
     }
   }
+
   Future<void> setLocalisationToGoogleUser(String userId) async {
     // Ajoutez un document dans la collection 'utilisateurs' avec le champ 'isSeller'
     await FirebaseFirestore.instance
         .collection('utilisateurs')
         .doc(userId)
         .set({
-          'email': widget._user.email,
-          'prenom': widget._user.displayName,
+      'email': widget._user.email,
+      'prenom': widget._user.displayName,
       'isSeller': false,
       'adresse': address,
       'ville': city,
@@ -89,8 +88,7 @@ class _LocalisationGoogleChoisirScreenState extends State<LocalisationGoogleChoi
       if (placemarks.isNotEmpty) {
         Placemark placemark = placemarks[0];
         setState(() {
-          address =
-              '${placemark.street}';
+          address = '${placemark.street}';
           city = '${placemark.locality}';
           country = '${placemark.country}';
         });
@@ -116,7 +114,7 @@ class _LocalisationGoogleChoisirScreenState extends State<LocalisationGoogleChoi
               child: Container(
                 alignment: Alignment.centerLeft,
                 child: IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.black),
+                  icon: const Icon(Icons.arrow_back, color: Colors.black),
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -134,7 +132,7 @@ class _LocalisationGoogleChoisirScreenState extends State<LocalisationGoogleChoi
                     onPressed: () {
                       controller.clear();
                     },
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                   ),
                   IconButton(
                     onPressed: () async {
@@ -142,7 +140,7 @@ class _LocalisationGoogleChoisirScreenState extends State<LocalisationGoogleChoi
                       controller.closeView(controller.text);
                       _closeKeyboard();
                     },
-                    icon: Icon(Icons.search),
+                    icon: const Icon(Icons.search),
                   ),
                 ],
                 builder: (context, controller) {
@@ -155,28 +153,28 @@ class _LocalisationGoogleChoisirScreenState extends State<LocalisationGoogleChoi
                         onPressed: () async {
                           _handleSearch(); // Appeler la fonction de recherche
                         },
-                        icon: Icon(Icons.search),
+                        icon: const Icon(Icons.search),
                       ),
                     ],
                   );
                 },
                 suggestionsBuilder: (context, controller) {
                   return [
-                    Wrap(),
+                    const Wrap(),
                   ];
                 },
               ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
-              child: Container(
+              child: SizedBox(
                 height: 420,
                 width: 320,
                 child: _searched
                     ? FlutterMap(
                         key: Key(_selectedLocation?.toString() ?? ""),
                         options: MapOptions(
-                          initialCenter: _selectedLocation ?? LatLng(0, 0),
+                          initialCenter: _selectedLocation ?? const LatLng(0, 0),
                           initialZoom: 16,
                         ),
                         children: [
@@ -192,7 +190,7 @@ class _LocalisationGoogleChoisirScreenState extends State<LocalisationGoogleChoi
                                       point: _selectedLocation!,
                                       width: 30,
                                       height: 30,
-                                      child: Icon(Icons.place),
+                                      child: const Icon(Icons.place),
                                     ),
                                   ]
                                 : [],
@@ -206,9 +204,7 @@ class _LocalisationGoogleChoisirScreenState extends State<LocalisationGoogleChoi
                 ? Padding(
                     padding:
                         const EdgeInsets.only(right: 16.0, left: 16, bottom: 8),
-                    child: Container(
-                      child: Text("Adresse trouvée : ${address}, ${city}, ${country}"),
-                    ),
+                    child: Text("Adresse trouvée : $address, $city, $country"),
                   )
                 : Container(),
           ],
@@ -220,23 +216,24 @@ class _LocalisationGoogleChoisirScreenState extends State<LocalisationGoogleChoi
         color: Colors.white,
         child: ElevatedButton(
           onPressed: () {
-            setLocalisationToGoogleUser(
-                widget._user.uid);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomepageScreen(
-                  user: widget._user,
-                  address: address,
-                  longitude: locations[0].longitude,
-                  latitude: locations[0].latitude,
-                  city: city,
-                  country: country,
+            if (address != 'Adresse introuvable' && address != "") {
+              setLocalisationToGoogleUser(widget._user.uid);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomepageScreen(
+                    user: widget._user,
+                    address: address,
+                    longitude: locations[0].longitude,
+                    latitude: locations[0].latitude,
+                    city: city,
+                    country: country,
+                  ),
                 ),
-              ),
-            );
+              );
+            }
           },
-          child: Text("Valider l'adresse"),
+          child: const Text("Valider l'adresse"),
         ),
       ),
     );

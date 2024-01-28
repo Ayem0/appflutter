@@ -14,12 +14,12 @@ class RegisterForm extends StatefulWidget {
   final FocusNode confirmPasswordFocusNode;
 
   const RegisterForm({
-    Key? key,
+    super.key,
     required this.nameFocusNode,
     required this.emailFocusNode,
     required this.passwordFocusNode,
     required this.confirmPasswordFocusNode,
-  }) : super(key: key);
+  });
   @override
   _RegisterFormState createState() => _RegisterFormState();
 }
@@ -38,9 +38,9 @@ class _RegisterFormState extends State<RegisterForm> {
   Route _routeToSignInScreen() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
-          SignInPageScreen(),
+          const SignInPageScreen(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        var begin = Offset(-1.0, 0.0);
+        var begin = const Offset(-1.0, 0.0);
         var end = Offset.zero;
         var curve = Curves.ease;
 
@@ -81,7 +81,7 @@ class _RegisterFormState extends State<RegisterForm> {
                   label: 'Prénom',
                   hint: 'Entrez votre prénom',
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 CustomFormField(
                   controller: _emailController,
                   focusNode: widget.emailFocusNode,
@@ -93,7 +93,7 @@ class _RegisterFormState extends State<RegisterForm> {
                   label: 'Email',
                   hint: 'Entrez votre email',
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 CustomFormField(
                   controller: _passwordController,
                   focusNode: widget.passwordFocusNode,
@@ -106,7 +106,7 @@ class _RegisterFormState extends State<RegisterForm> {
                   label: 'Mot de passe',
                   hint: 'Entrez votre mot de passe',
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 CustomFormField(
                   controller: _confirmPasswordController,
                   focusNode: widget.confirmPasswordFocusNode,
@@ -122,10 +122,10 @@ class _RegisterFormState extends State<RegisterForm> {
               ],
             ),
           ),
-          SizedBox(height: 24.0),
+          const SizedBox(height: 24.0),
           _isSingningUp
-              ? Padding(
-                  padding: const EdgeInsets.all(16.0),
+              ? const Padding(
+                  padding: EdgeInsets.all(16.0),
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
                       Colors.blueAccent,
@@ -133,8 +133,8 @@ class _RegisterFormState extends State<RegisterForm> {
                   ),
                 )
               : Padding(
-                  padding: EdgeInsets.only(left: 0.0, right: 0.0),
-                  child: Container(
+                  padding: const EdgeInsets.only(left: 0.0, right: 0.0),
+                  child: SizedBox(
                     width: double.maxFinite,
                     child: ElevatedButton(
                       style: ButtonStyle(
@@ -179,14 +179,14 @@ class _RegisterFormState extends State<RegisterForm> {
                           _isSingningUp = false;
                         });
                       },
-                      child: Padding(
+                      child: const Padding(
                         padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
                         child: Text(
                           'Créer un compte',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 255, 255, 255),
+                            color: Color.fromARGB(255, 255, 255, 255),
                             letterSpacing: 2,
                           ),
                         ),

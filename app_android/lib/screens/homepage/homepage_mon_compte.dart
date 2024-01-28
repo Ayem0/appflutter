@@ -64,36 +64,32 @@ class _homepageMoncompteState extends State<homepageMoncompte> {
   }
 
   Future<bool> isUserSeller(String userId) async {
-  try {
-    // Récupère le document utilisateur
-    DocumentSnapshot userDocument = await FirebaseFirestore.instance
-        .collection('utilisateurs')
-        .doc(userId)
-        .get();
+    try {
+      // Récupère le document utilisateur
+      DocumentSnapshot userDocument = await FirebaseFirestore.instance
+          .collection('utilisateurs')
+          .doc(userId)
+          .get();
 
-    // Vérifie si le document existe et si la propriété isSeller est vraie
-    if (userDocument.exists) {
-      bool res = userDocument.get('isSeller');
-      setState(() {
-        isSeller = res;
-        
-      });
-      if (isSeller == true) {
+      // Vérifie si le document existe et si la propriété isSeller est vraie
+      if (userDocument.exists) {
+        bool res = userDocument.get('isSeller');
+        setState(() {
+          isSeller = res;
+        });
+        if (isSeller == true) {
           return true;
-
-        }
-        else {
+        } else {
           return false;
         }
-    } else {
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print('Erreur lors de la vérification du statut de vendeur : $e');
       return false;
     }
-  } catch (e) {
-    print('Erreur lors de la vérification du statut de vendeur : $e');
-    return false;
   }
-}
-
 
   Future<void> _showConfirmationDialog(
       BuildContext context, Function setState) async {
@@ -124,13 +120,14 @@ class _homepageMoncompteState extends State<homepageMoncompte> {
       },
     );
   }
+
   Future<void> loadIsSellerStatus() async {
-  bool result = await isUserSeller(_user.uid);
-  setState(() {
-    isSeller = result;
-  });
-  print(isSeller);
-}
+    bool result = await isUserSeller(_user.uid);
+    setState(() {
+      isSeller = result;
+    });
+    print(isSeller);
+  }
 
   @override
   void initState() {
@@ -202,68 +199,67 @@ class _homepageMoncompteState extends State<homepageMoncompte> {
               ),
             ),
           ),
-          if (isSeller) 
+          if (isSeller)
             TextButton.icon(
-            onPressed: () {
-              // envoie vers l'homepage vendeur
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SellerHomepageScreen(
-                     user: widget._user,
+              onPressed: () {
+                // envoie vers l'homepage vendeur
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SellerHomepageScreen(
+                      user: widget._user,
+                    ),
                   ),
+                );
+              },
+              icon: Icon(
+                Icons.store,
+                color: Colors.black,
+              ),
+              label: Text(
+                "Accéder à l'interface vendeur",
+                style: TextStyle(color: Colors.black),
+              ),
+              style: ElevatedButton.styleFrom(
+                side: BorderSide(
+                  color: buttonsVisible ? Colors.black : Colors.transparent,
+                  width: 0.0,
                 ),
-              );
-            },
-            icon: Icon(
-              Icons.store,
-              color: Colors.black,
-            ),
-            label: Text(
-              "Accéder à l'interface vendeur",
-              style: TextStyle(color: Colors.black),
-            ),
-            style: ElevatedButton.styleFrom(
-              side: BorderSide(
-                color: buttonsVisible ? Colors.black : Colors.transparent,
-                width: 0.0,
               ),
             ),
-          ),
-          
           if (!isSeller) // Si l'utilisateur n'est pas un vendeur
-      TextButton.icon(
-        onPressed: () {
-          // Logique pour enregistrer le commerce
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => RegisterProScreen(
-                user: widget._user,
-                address: _address,
-                city: _city,
-                latitude: _latitude,
-                longitude: _longitude,
-                country: _country,
+            TextButton.icon(
+              onPressed: () {
+                // Logique pour enregistrer le commerce
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RegisterProScreen(
+                      user: widget._user,
+                      address: _address,
+                      city: _city,
+                      latitude: _latitude,
+                      longitude: _longitude,
+                      country: _country,
+                    ),
+                  ),
+                );
+              },
+              icon: Icon(
+                Icons.store,
+                color: Colors.black,
+              ),
+              label: Text(
+                'Enregistrer mon commerce',
+                style: TextStyle(color: Colors.black),
+              ),
+              style: ElevatedButton.styleFrom(
+                side: BorderSide(
+                  color: buttonsVisible ? Colors.black : Colors.transparent,
+                  width: 0.0,
+                ),
               ),
             ),
-          );
-        },
-        icon: Icon(
-          Icons.store,
-          color: Colors.black,
-        ),
-        label: Text(
-          'Enregistrer mon commerce',
-          style: TextStyle(color: Colors.black),
-        ),
-        style: ElevatedButton.styleFrom(
-          side: BorderSide(
-            color: buttonsVisible ? Colors.black : Colors.transparent,
-            width: 0.0,
-          ),
-        ),
-      ),
           TextButton.icon(
             onPressed: () {
               // Logique pour "Conditions générales"

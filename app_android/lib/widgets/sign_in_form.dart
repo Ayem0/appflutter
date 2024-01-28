@@ -11,10 +11,10 @@ class SignInForm extends StatefulWidget {
   final FocusNode passwordFocusNode;
 
   const SignInForm({
-    Key? key,
+    super.key,
     required this.emailFocusNode,
     required this.passwordFocusNode,
-  }) : super(key: key);
+  });
   @override
   _SignInFormState createState() => _SignInFormState();
 }
@@ -52,7 +52,7 @@ class _SignInFormState extends State<SignInForm> {
                   label: 'Email',
                   hint: 'Entrez votre email',
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 CustomFormField(
                   controller: _passwordController,
                   focusNode: widget.passwordFocusNode,
@@ -69,17 +69,17 @@ class _SignInFormState extends State<SignInForm> {
             ),
           ),
           _isSigningIn
-              ? Padding(
-                  padding: const EdgeInsets.all(16.0),
+              ? const Padding(
+                  padding: EdgeInsets.all(16.0),
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      const Color.fromARGB(255, 28, 53, 97),
+                      Color.fromARGB(255, 28, 53, 97),
                     ),
                   ),
                 )
               : Padding(
-                  padding: EdgeInsets.only(left: 0.0, right: 0.0),
-                  child: Container(
+                  padding: const EdgeInsets.only(left: 0.0, right: 0.0),
+                  child: SizedBox(
                     width: double.maxFinite,
                     child: ElevatedButton(
                       style: ButtonStyle(
@@ -130,7 +130,7 @@ class _SignInFormState extends State<SignInForm> {
                           _isSigningIn = false;
                         });
                       },
-                      child: Padding(
+                      child: const Padding(
                         padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
                         child: Text(
                           'Connexion',

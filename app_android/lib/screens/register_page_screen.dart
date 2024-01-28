@@ -52,7 +52,7 @@ class _RegisterPageScreenState extends State<RegisterPageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16.0, 40, 16, 50),
@@ -65,7 +65,7 @@ class _RegisterPageScreenState extends State<RegisterPageScreen> {
                 'assets/launchingpage_image/logo.png',
                 height: 150,
               ),
-              SizedBox(height: 20.0),
+              const SizedBox(height: 20.0),
               SignInButton(
                 Buttons.google,
                 text: "S'inscrire avec Google",
@@ -88,15 +88,13 @@ class _RegisterPageScreenState extends State<RegisterPageScreen> {
                             LocalisationPageScreen(user: user),
                       ),
                     );
-                    print(
-                        'Utilisateur connecté avec succès: ${user.displayName}');
                   } catch (e) {
                     // Une erreur s'est produite lors de la connexion avec Google
                     print('Erreur de connexion avec Google: $e');
                   }
                 },
               ),
-              SizedBox(height: 20.0),
+              const SizedBox(height: 20.0),
               // Formulaire avec e-mail et mot de passe en dessous
               RegisterForm(
                 nameFocusNode: _nameFocusNode,
@@ -106,27 +104,27 @@ class _RegisterPageScreenState extends State<RegisterPageScreen> {
               ),
 
               // Lien "Mot de passe oublié ?" en dessous
-              SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     'Vous avez déja un compte ?',
                     style: TextStyle(
                       color: Color.fromARGB(255, 6, 44, 41),
                     ),
                   ),
-                  SizedBox(width: 6.0),
+                  const SizedBox(width: 6.0),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SignInPageScreen()),
+                            builder: (context) => const SignInPageScreen()),
                       );
                       // Logique pour le texte "S'inscrire"
                     },
-                    child: Text.rich(
+                    child: const Text.rich(
                       TextSpan(
                         text: 'Se connecter',
                         style: TextStyle(

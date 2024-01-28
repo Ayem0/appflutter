@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:app_android/screens/localisationpage_screen.dart';
+import '../offerdetail_screen.dart';
 
 class homepageAccueil extends StatefulWidget {
   const homepageAccueil({
@@ -26,7 +28,6 @@ class homepageAccueil extends StatefulWidget {
   final String _city;
   final String _country;
 
-
   @override
   State<homepageAccueil> createState() => _homepageAccueilState();
 }
@@ -45,6 +46,9 @@ class _homepageAccueilState extends State<homepageAccueil> {
   var searHistory = [];
   final TextEditingController searchController = TextEditingController();
   final SearchController controller = SearchController();
+  List<Map<String, dynamic>> newOffers = [];
+  List<Map<String, dynamic>> popularOffers = [];
+  List<Map<String, dynamic>> closestOffers = [];
 
   @override
   void initState() {
@@ -54,9 +58,13 @@ class _homepageAccueilState extends State<homepageAccueil> {
     _longitude = widget._longitude;
     _city = widget._city;
     _country = widget._country;
-    print(_city + _country + _address + _latitude.toString() + _longitude.toString());
-    
+    print(_city +
+        _country +
+        _address +
+        _latitude.toString() +
+        _longitude.toString());
 
+    getNewOffers();
     super.initState();
   }
 
@@ -78,6 +86,25 @@ class _homepageAccueilState extends State<homepageAccueil> {
     FocusScope.of(context).requestFocus(FocusNode());
   }
 
+  Future<void> getNewOffers() async {
+    try {
+      // Récupérer les offres du vendeur depuis Firestore
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('offres')
+              .where('etat', isEqualTo: "disponible")
+              .orderBy('date_creation', descending: true)
+              .get();
+
+      setState(() {
+        newOffers = querySnapshot.docs.map((doc) => doc.data()).toList();
+      });
+    } catch (e) {
+      print('Erreur lors de la récupération des offres : $e');
+    }
+  }
+
+  // FAIRE LES FONCTIONS POUR AVOIR LES OFFRES POPULAIRES, LES OFFRES LES PLUS PROCHES, LES OFFRES FAVORITES
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,8 +127,9 @@ class _homepageAccueilState extends State<homepageAccueil> {
                   );
                 },
                 child: Text(
-                  "À ${_city}",
-                  style: TextStyle(
+                  "À : $_address, $_city",
+                  style: const TextStyle(
+                    fontSize: 13,
                     color: Color.fromARGB(160, 0, 0, 0), // Couleur du texte
                   ),
                 ),
@@ -179,20 +207,17 @@ class _homepageAccueilState extends State<homepageAccueil> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  buildCategory("Favoris"),
-                  buildOfferList(),
-
-                  buildCategory("Recommandés pour vous"),
-                  buildOfferList(),
-
-                  buildCategory("Les plus proches de vous"),
-                  buildOfferList(),
-
                   buildCategory("Nouveautés"),
-                  buildOfferList(),
+                  buildOfferList(newOffers),
 
-                  buildCategory("Populaires"),
-                  buildOfferList(),
+                  // buildCategory("Les plus proches de vous"),
+                  // buildOfferList(newOffers),
+
+                  // buildCategory("Nouveautés"),
+                  // buildOfferList(newOffers),
+
+                  // buildCategory("Populaires"),
+                  // buildOfferList(newOffers),
 
                   // Répétez le même modèle pour d'autres catégories...
                 ],
@@ -225,14 +250,17 @@ class _homepageAccueilState extends State<homepageAccueil> {
               ),
               minimumSize: MaterialStateProperty.all<Size>(Size(0, 0)),
             ),
-            child: const Text("Tout voir", style: TextStyle(fontSize: 11, color: Colors.black),),
+            child: const Text(
+              "Tout voir",
+              style: TextStyle(fontSize: 11, color: Colors.black),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget buildOfferList() {
+  Widget buildOfferList(list) {
     return Align(
       alignment: Alignment.topLeft,
       child: Container(
@@ -240,99 +268,123 @@ class _homepageAccueilState extends State<homepageAccueil> {
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            children: List.generate(20, (index) {
+            children: List.generate(list.length, (index) {
+              Map<String, dynamic> offer = list[index];
+
               return Padding(
                 padding: const EdgeInsets.fromLTRB(4, 0, 0, 4),
-                child: Container(
-                  height: 150,
-                  width: 210,
-                  child: Card(
-                    elevation: 3,
-                    color: Colors.white,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: 70,
-                          width: 210,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10.0),
-                              topRight: Radius.circular(10.0),
-                            ),
-                            image: DecorationImage(
-                              image: AssetImage(
-                                  'assets/launchingpage_image/interieur-boulangerie.jpg'),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          child: Align(
-                            alignment: Alignment.topRight,
-                            child: IconButton(
-                              icon: Icon(
-                                isFavorite
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: Colors.white, // Couleur du cœur
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => OffreDetailPage(
+                          offer: offer,
+                          user: _user,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    height: 150,
+                    width: 210,
+                    child: Card(
+                      elevation: 3,
+                      color: Colors.white,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Hero(
+                            tag: '${offer['image_url']}',
+                            child: Container(
+                              height: 70,
+                              width: 210,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(10.0),
+                                  topRight: Radius.circular(10.0),
+                                ),
+                                image: DecorationImage(
+                                  image: NetworkImage(offer['image_url']),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  isFavorite = !isFavorite;
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(8, 3, 1, 1),
-                          child: Text(
-                            "Boulangerie de la mairie",
-                            style: TextStyle(
-                              color: Colors.black, // Couleur du texte
-                            ),
-                          ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
-                          child: Text(
-                            "Pain au chocolat",
-                            style: TextStyle(
-                              color: Colors.black, // Couleur du texte
-                            ),
-                          ),
-                        ),
-                        const Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
-                              child: Text(
-                                "08:00-18:00",
-                                style: TextStyle(
-                                  color: Colors.black, // Couleur du texte
+                              child: Align(
+                                alignment: Alignment.topRight,
+                                child: IconButton(
+                                  icon: Icon(
+                                    isFavorite
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      isFavorite = !isFavorite;
+                                    });
+                                  },
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(8, 1, 1, 1),
-                              child: Text(
-                                "7 kms",
-                                style: TextStyle(
-                                  color: Colors.black, // Couleur du texte
-                                ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 3, 1, 1),
+                            child: Text(
+                              offer['nom_du_commerce'] ?? '',
+                              style: TextStyle(
+                                fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                                color: Color.fromARGB(255, 50, 50, 50),
                               ),
                             ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(16, 0, 8, 0),
-                              child: Text(
-                                "3.00 €",
-                                style: TextStyle(
-                                  color: Colors.black, // Couleur du texte
-                                ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 1, 1, 1),
+                            child: Text(
+                              offer['nom_offre'] ?? '',
+                              style: TextStyle(
+                                fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                                color: Color.fromARGB(255, 70, 70, 70),
                               ),
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                          Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(8, 1, 1, 1),
+                                child: Text(
+                                  "${offer['heure_recup_debut']}-${offer['heure_recup_fin']}",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(8, 1, 1, 1),
+                                child: Text(
+                                  "7 kms", // Remplacez par le champ approprié
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                              Spacer(),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                                child: Text(
+                                  "${offer['prix']} €",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                                    color: Color.fromARGB(255, 50, 50, 50),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
