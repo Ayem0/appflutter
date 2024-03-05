@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:app_android/screens/localisationpage_screen.dart';
+import 'package:geolocator/geolocator.dart';
 import '../offerdetail_screen.dart';
 
 class homepageAccueil extends StatefulWidget {
@@ -281,6 +282,11 @@ class _homepageAccueilState extends State<homepageAccueil> {
                         builder: (context) => OffreDetailPage(
                           offer: offer,
                           user: _user,
+                          address: _address,
+                          city: _city,
+                          longitude: _longitude,
+                          latitude: _latitude,
+                          country: _country,
                         ),
                       ),
                     );
@@ -300,7 +306,7 @@ class _homepageAccueilState extends State<homepageAccueil> {
                               height: 70,
                               width: 210,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.only(
+                                borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(10.0),
                                   topRight: Radius.circular(10.0),
                                 ),
@@ -331,7 +337,7 @@ class _homepageAccueilState extends State<homepageAccueil> {
                             padding: const EdgeInsets.fromLTRB(8, 3, 1, 1),
                             child: Text(
                               offer['nom_du_commerce'] ?? '',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 15,
                               fontWeight: FontWeight.w600,
                                 color: Color.fromARGB(255, 50, 50, 50),
@@ -342,7 +348,7 @@ class _homepageAccueilState extends State<homepageAccueil> {
                             padding: const EdgeInsets.fromLTRB(8, 1, 1, 1),
                             child: Text(
                               offer['nom_offre'] ?? '',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                               fontWeight: FontWeight.w600,
                                 color: Color.fromARGB(255, 70, 70, 70),
@@ -355,7 +361,7 @@ class _homepageAccueilState extends State<homepageAccueil> {
                                 padding: const EdgeInsets.fromLTRB(8, 1, 1, 1),
                                 child: Text(
                                   "${offer['heure_recup_debut']}-${offer['heure_recup_fin']}",
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.black,
                                   ),
                                 ),
@@ -363,18 +369,19 @@ class _homepageAccueilState extends State<homepageAccueil> {
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(8, 1, 1, 1),
                                 child: Text(
-                                  "7 kms", // Remplacez par le champ approprié
+                                  ((Geolocator.distanceBetween(_latitude, _longitude, offer['latitude'], offer['longitude'])) / 1000.0).toStringAsFixed(1) + " kms" ,
+                                  // Remplacez par le champ approprié
                                   style: TextStyle(
                                     color: Colors.black,
                                   ),
                                 ),
                               ),
-                              Spacer(),
+                              const Spacer(),
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
                                 child: Text(
                                   "${offer['prix']} €",
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 14,
                               fontWeight: FontWeight.w600,
                                     color: Color.fromARGB(255, 50, 50, 50),

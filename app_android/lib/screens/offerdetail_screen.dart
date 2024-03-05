@@ -1,13 +1,34 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 class OffreDetailPage extends StatefulWidget {
-  const OffreDetailPage(
-      {super.key, required User user, required Map<String, dynamic> offer})
-      : _user = user,
-        _offer = offer;
+  const OffreDetailPage({
+    Key? key,
+    required User user,
+    required String address,
+    required double latitude,
+    required double longitude,
+    required String city,
+    required String country,
+    required Map<String, dynamic> offer,
+  })  : _user = user,
+        _address = address,
+        _latitude = latitude,
+        _longitude = longitude,
+        _city = city,
+        _country = country,
+        _offer = offer,
+        super(key: key);
+
   final User _user;
+  final String _address;
+  final double _latitude;
+  final double _longitude;
+  final String _city;
+  final String _country;
   final Map<String, dynamic> _offer;
+
   @override
   _OffreDetailPageState createState() => _OffreDetailPageState();
 }
@@ -16,12 +37,44 @@ class _OffreDetailPageState extends State<OffreDetailPage> {
   bool isFavorited = false;
   late User _user;
   late Map<String, dynamic> _offer;
+  late double distance;
+  late double distanceEnMetre;
+  late String distanceToString;
+  String _address = ''; // Ajoutez les autres champs nécessaires
+  double _latitude = 0.0;
+  double _longitude = 0.0;
+  String _city = '';
+  String _country = '';
 
   @override
   void initState() {
     _user = widget._user;
     _offer = widget._offer;
+    _address = widget._address;
+    _latitude = widget._latitude;
+    _longitude = widget._longitude;
+    _city = widget._city;
+    _country = widget._country;
+    calculateDistance();
     super.initState();
+  }
+
+  void calculateDistance() async {
+    try {
+      distance = await Geolocator.distanceBetween(
+        _latitude,
+        _longitude,
+        _offer['latitude'],
+        _offer['longitude'],
+      );
+      distanceEnMetre = (distance / 1000.0);
+      if(distanceEnMetre >= 2) distanceToString = (distance / 1000.0).toStringAsFixed(1) + ' kms';
+      if(distanceEnMetre < 2) distanceToString = (distance / 1000.0).toStringAsFixed(1) + ' km';
+       // Mise à jour de l'affichage après le calcul de la distance
+      setState(() {});
+    } catch (e) {
+      print("Erreur lors du calcul de la distance : $e");
+    }
   }
 
   @override
@@ -37,13 +90,20 @@ class _OffreDetailPageState extends State<OffreDetailPage> {
             child: Stack(
               children: [
                 Hero(
-                  tag:
-                      '${_offer['image_url']}', // Utilisez le même tag que sur la liste
-                  child: Image.asset(
-                    'assets/launchingpage_image/interieur-boulangerie.jpg',
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
+                  tag: '${_offer['image_url']}',
+                  child: Container(
+                    height: 70,
+                    width: 210,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(10.0),
+                        topRight: Radius.circular(10.0),
+                      ),
+                      image: DecorationImage(
+                        image: NetworkImage(_offer['image_url']),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
                 // Flèche de retour
@@ -141,12 +201,11 @@ class _OffreDetailPageState extends State<OffreDetailPage> {
                       ),
                     ),
                   ),
-
                   // Ajout d'un padding à droite
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16.0, 5, 16, 0),
                     child: Text(
-                      '7 kms',
+                      'Distance : $distanceToString',
                       style: const TextStyle(
                         fontSize: 13.0,
                         color: Colors.black, // Couleur noire
@@ -162,7 +221,7 @@ class _OffreDetailPageState extends State<OffreDetailPage> {
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16.0, 0, 0, 2),
                       child: Text(
-                        'Adresse : ${_offer['adresse']}, ${_offer['ville']}, ${_offer['pays']}',
+                        'Adresse : ${_offer['adresse']}',
                         style: const TextStyle(
                           fontSize: 13.0,
                           color: Colors.black,
@@ -198,7 +257,8 @@ class _OffreDetailPageState extends State<OffreDetailPage> {
                   const SizedBox(height: 8),
                   Text(
                     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur iaculis malesuada ullamcorper. Aliquam erat volutpat. Etiam arcu lacus, malesuada quis mi eu, vulputate lobortis metus. Mauris dolor mi, congue eu quam at, accumsan hendrerit nunc. Nulla id felis accumsan, molestie arcu eu, rutrum mi. Ut nec porttitor tortor, vel tincidunt lorem. Nulla porta elit auctor urna elementum, non pharetra orci cursus. Donec cursus, sem at ultrices vehicula, eros arcu hendrerit est, ut finibus odio dui ac nulla. Donec eleifend enim et condimentum dictum. Integer vehicula accumsan urna, nec imperdiet dui ultricies eget. Integer lobortis arcu metus, sed faucibus mi efficitur ac. Nulla ante quam, laoreet in malesuada in, facilisis vel ipsum. Nullam et urna eget elit posuere tristique ac quis arcu.',
-                    style: const TextStyle(color: Colors.black), // Couleur noire
+                    style:
+                        const TextStyle(color: Colors.black), // Couleur noire
                   ),
                 ],
               ),

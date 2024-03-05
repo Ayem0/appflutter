@@ -390,6 +390,11 @@ class _HomepageParcourirState extends State<HomepageParcourir> {
                       builder: (context) => OffreDetailPage(
                         offer: offer,
                         user: _user,
+                        address: _address,
+                        city: _city,
+                        longitude: _longitude,
+                        latitude: _latitude,
+                        country: _country,
                       ),
                     ),
                   );
